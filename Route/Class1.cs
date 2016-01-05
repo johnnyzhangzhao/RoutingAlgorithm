@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace Route
 {
     public class Class1
-    {
+    { 
     }
 }
