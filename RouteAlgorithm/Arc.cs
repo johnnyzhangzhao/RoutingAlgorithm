@@ -5,7 +5,12 @@ using System.Text;
 
 namespace RouteAlgorithm
 {
-    class Arc
+    public class Arc:Coordinate
     {
+        public string arcName;
+        public string direction;
+        public float length;
+        public List<Arc> adjacentArcs;
+        public List<Node> adjacentNodes;
     }
 }
