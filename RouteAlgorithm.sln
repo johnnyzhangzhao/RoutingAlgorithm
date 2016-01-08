@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteAlgorithm", "RouteAlgorithm\RouteAlgorithm.csproj", "{C5D38DAE-AEAF-4491-9EC4-749888A3DC6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{9CF78C27-3C0F-4142-B3B7-EFAD77B58FDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C5D38DAE-AEAF-4491-9EC4-749888A3DC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5D38DAE-AEAF-4491-9EC4-749888A3DC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5D38DAE-AEAF-4491-9EC4-749888A3DC6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CF78C27-3C0F-4142-B3B7-EFAD77B58FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CF78C27-3C0F-4142-B3B7-EFAD77B58FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CF78C27-3C0F-4142-B3B7-EFAD77B58FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CF78C27-3C0F-4142-B3B7-EFAD77B58FDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

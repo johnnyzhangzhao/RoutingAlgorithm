@@ -8,24 +8,62 @@ namespace RouteAlgorithm
 {
     public class RoadNetwork
     {
-        public float coverager;
-        public int numNodes;
-        public int numArcs;
-        public Arc mapArcs = new Arc();
-       
-        public List<Arc> segments=new List<Arc> ();
-        public List<Node> nodes =new List<Node> ();
+        private Bounds bounds;
+        private List<Arc> arcs;
+        private List<Node> nodes;
 
-        public void AddNode()
-        { }
-        public void AddArc()
-        { }
-        public void GetDirection(Node startNode,Node endNode)
-        { }
-        public void showRoadNetwork()
+        public RoadNetwork()
         {
-            
         }
 
+        internal Bounds Bounds
+        {
+            get
+            {
+                return bounds;
+            }
+            set
+            {
+                bounds = value;
+            }
+        }
+
+        public List<Arc> Arcs
+        {
+            get
+            {
+                if (arcs == null)
+                {
+                    arcs = new List<Arc>();
+                }
+                return arcs;
+            }
+        }
+
+        public List<Node> Nodes
+        {
+            get
+            {
+                if (nodes == null)
+                {
+                    nodes = new List<Node>();
+                }
+                return nodes;
+            }
+        }
+
+        public string GetDirection(Node startNode, Node endNode, Arc road)
+        {
+          throw new NotImplementedException() ;
+        }
+
+        public void readFromOsmFile(string fileName)
+        {
+        }
+
+        public override string ToString()
+        {
+            return "this road network has"+nodes.Count()+"nodes"+arcs.Count()+"arcs";
+        }
     }
 }
