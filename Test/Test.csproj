@@ -34,6 +34,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSScriptLibrary">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\CSScriptLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="GeoAPI">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\GeoAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="MapSuiteCore">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\MapSuiteCore.dll</HintPath>
+    </Reference>
+    <Reference Include="NetTopologySuite">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\NetTopologySuite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
