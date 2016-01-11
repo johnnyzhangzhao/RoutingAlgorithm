@@ -11,6 +11,7 @@ namespace RouteAlgorithm
         private Bounds bounds;
         private List<Arc> arcs;
         private List<Node> nodes;
+        private List<List<Arc>> adjacentArc;
 
         public RoadNetwork()
         {
@@ -52,13 +53,30 @@ namespace RouteAlgorithm
             }
         }
 
+        public List<List<Arc>> AdjacentArc
+        {
+            get
+            {
+                if (adjacentArc == null)
+                {
+                    adjacentArc = new List<List<Arc>>();
+                }
+                return adjacentArc;
+            }            
+        }
+
         public string GetDirection(Node startNode, Node endNode, Arc road)
         {
+            if (road.Tags.ContainsKey(dirction)==1)
+            {
+
+            }
           throw new NotImplementedException() ;
         }
 
         public void readFromOsmFile(string fileName)
         {
+            
         }
 
         public override string ToString()

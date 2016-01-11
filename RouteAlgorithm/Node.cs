@@ -8,8 +8,7 @@ namespace RouteAlgorithm
     public class Node
     {
         private string nodeName;
-        private string traffic_sign;
-        private string city_limit;
+        private Dictionary<string, string> tags;
         private List<Arc> intersectArc ;
         private List<Arc> adjacentArc;
         private List<Node> adjacentNode ;
@@ -60,6 +59,18 @@ namespace RouteAlgorithm
             set
             {
                 adjacentNode = value;
+            }
+        }
+
+        public Dictionary<string, string> Tags
+        {
+            get
+            {
+                if (tags == null)
+                {
+                    tags = new Dictionary<string, string>();
+                }
+                return tags;
             }
         }
 

@@ -9,11 +9,7 @@ namespace RouteAlgorithm
     {
         private int headNodeId;
         private int cost;
-        private char visible;
         private Dictionary<string,string> tags;
-        private string arcName;
-        private string direction;
-        private float length;
         private List<Node> intersectNode;
         private List<Arc> adjacentArcs;
         private List<Node> adjacentNodes;
@@ -52,45 +48,6 @@ namespace RouteAlgorithm
             }
         }
 
-        public char Visible
-        {
-            get
-            {
-                return visible;
-            }
-
-            set
-            {
-                visible = value;
-            }
-        }
-
-        public string ArcName
-        {
-            get
-            {
-                return arcName;
-            }
-
-            set
-            {
-                arcName = value;
-            }
-        }
-
-        public float Length
-        {
-            get
-            {
-                return length;
-            }
-
-            set
-            {
-                length = value;
-            }
-        }
-
         public Dictionary<string, string> Tags
         {
             get
@@ -105,7 +62,7 @@ namespace RouteAlgorithm
 
         public override string ToString()
         {
-            return "{"+HeadNodeId + "," + ArcName + "," +"}";
+            return "{"+HeadNodeId + "," + cost  +"}";
         }
     }
 }
