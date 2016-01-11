@@ -1,50 +1,107 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RouteAlgorithm
 {
     public class Arc
     {
-        private int headNodeId;
-        private int cost;
-        private Dictionary<string,string> tags;
-        private List<Node> intersectNode;
-        private List<Arc> adjacentArcs;
-        private List<Node> adjacentNodes;
+        private string id;
+        private Coordinate coordinate;
+        private double cost;
+        private Node tailNode;
+        private Node headNode;
+        private double length;
+        private RoadSpeed speed;
+        private Collection<Node> intermediateNodes;
+        private RoadDirection direction;
+        private string name;
+        private Dictionary<string, string> tags;
 
-        public Arc() { }
+        private Collection<Arc> incomingArcs;
+        private Collection<Arc> outgoingArcs;
 
-        public Arc(int headNodeId, int cost)
+        public Arc()
         {
-            this.headNodeId = headNodeId;
+        }
+
+        public Arc(string id, Node headNode, Node tailNode, float cost)
+        {
             this.Cost = cost;
         }
 
-        public int HeadNodeId
+        public string Id
+        {
+            get { return id; }
+            private set { id = value; }
+        }
+
+        public double Cost
+        {
+            get { return cost; }
+            set { cost = value; }
+        }
+
+        public Node HeadNode
+        {
+            get { return headNode; }
+            set { headNode = value; }
+        }
+
+        public Node TailNode
+        {
+            get { return tailNode; }
+            set { tailNode = value; }
+        }
+
+
+        public double Length
         {
             get
             {
-                return headNodeId;
+                return length;
             }
 
             set
             {
-                headNodeId = value;
+                length = value;
             }
         }
 
-        public int Cost
+
+        public RoadSpeed Speed
+        {
+            get { return speed; }
+            set { speed = value; }
+        }
+
+        public Collection<Node> IntermediateNodes
         {
             get
             {
-                return cost;
+                if (intermediateNodes == null)
+                {
+                    intermediateNodes = new Collection<Node>();
+                }
+                return intermediateNodes;
+            }
+        }
+
+        public RoadDirection Direction
+        {
+            get { return direction; }
+            set { direction = value; }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return name;
             }
 
             set
             {
-                cost = value;
+                name = value;
             }
         }
 
@@ -60,9 +117,33 @@ namespace RouteAlgorithm
             }
         }
 
+        public Collection<Arc> IncomingArcs
+        {
+            get
+            {
+                if (incomingArcs == null)
+                {
+                    incomingArcs = new Collection<Arc>();
+                }
+                return incomingArcs;
+            }
+        }
+
+        public Collection<Arc> OutgoingArcs
+        {
+            get
+            {
+                if (outgoingArcs == null)
+                {
+                    outgoingArcs = new Collection<Arc>();
+                }
+                return outgoingArcs;
+            }
+        }
+
         public override string ToString()
         {
-            return "{"+HeadNodeId + "," + cost  +"}";
+            return string.Format("id:{0},headNode:{3},tailNode:{4},cost:{5}", id, headNode, tailNode, cost);
         }
     }
 }

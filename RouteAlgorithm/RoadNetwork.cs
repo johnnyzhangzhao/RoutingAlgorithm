@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RouteAlgorithm
 {
@@ -11,13 +8,15 @@ namespace RouteAlgorithm
         private Bounds bounds;
         private List<Arc> arcs;
         private List<Node> nodes;
-        private List<List<Arc>> adjacentArc;
+        // Create a adjacent list to store the whole network
+        private Dictionary<Node, Collection<Arc>> adjacentArcs;
 
+        
         public RoadNetwork()
         {
         }
 
-        internal Bounds Bounds
+        public Bounds Bounds
         {
             get
             {
@@ -53,35 +52,23 @@ namespace RouteAlgorithm
             }
         }
 
-        public List<List<Arc>> AdjacentArc
+        public Dictionary<Node, Collection<Arc>> AdjacentArcs
         {
-            get
+            get 
             {
-                if (adjacentArc == null)
+                if (adjacentArcs == null)
                 {
-                    adjacentArc = new List<List<Arc>>();
+                    adjacentArcs = new Dictionary<Node, Collection<Arc>>();
                 }
-                return adjacentArc;
-            }            
-        }
-
-        public string GetDirection(Node startNode, Node endNode, Arc road)
-        {
-            if (road.Tags.ContainsKey(dirction)==1)
-            {
-
+                return adjacentArcs; 
             }
-          throw new NotImplementedException() ;
         }
 
-        public void readFromOsmFile(string fileName)
-        {
-            
-        }
 
-        public override string ToString()
+        public double GetCost(Arc road)
         {
-            return "this road network has"+nodes.Count()+"nodes"+arcs.Count()+"arcs";
+            road.Cost = road.Length / (int)road.Speed*60;
+            return road.Cost;
         }
     }
 }

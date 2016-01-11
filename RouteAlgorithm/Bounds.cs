@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RouteAlgorithm
 {
-    class Bounds
+    public class Bounds
     {
         float minlat;
         float maxlat;

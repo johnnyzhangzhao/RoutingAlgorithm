@@ -1,65 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RouteAlgorithm
 {
     public class Node
     {
-        private string nodeName;
+        private string id;
+        private Coordinate coordinate;
         private Dictionary<string, string> tags;
-        private List<Arc> intersectArc ;
-        private List<Arc> adjacentArc;
-        private List<Node> adjacentNode ;
+        private Collection<Arc> incomingArcs;
+        private Collection<Arc> outgoingArcs;
 
-        public Node() { }
-
-        public Node(int id, float latitude, float longitude)
-        {
-            Coordinate co = new Coordinate();
-            co.Id = id;
-            co.Latitude = latitude;
-            co.Longitude = longitude;
+        public Node() 
+        { 
         }
 
-        public List<Arc> IntersectArc
+        public Node(string id, float latitude, float longitude)
         {
-            get
-            {
-                return intersectArc;
-            }
-
-            set
-            {
-                intersectArc = value;
-            }
+            this.id = id;
+            this.Coordinate = new Coordinate(latitude, longitude);
         }
 
-        public List<Arc> AdjacentArc
+        public string Id
         {
-            get
-            {
-                return adjacentArc;
-            }
-
-            set
-            {
-                adjacentArc = value;
-            }
+            get { return id; }
+            private set { id = value; }
         }
 
-        public List<Node> AdjacentNode
+        public Coordinate Coordinate
         {
-            get
-            {
-                return adjacentNode;
-            }
-
-            set
-            {
-                adjacentNode = value;
-            }
+            get { return coordinate; }
+            set { coordinate = value; }
         }
 
         public Dictionary<string, string> Tags
@@ -70,12 +41,37 @@ namespace RouteAlgorithm
                 {
                     tags = new Dictionary<string, string>();
                 }
-                return tags;
+                return tags; 
+            }
+        }
+
+        public Collection<Arc> IncomingArcs
+        {
+            get
+            {
+                if (incomingArcs == null)
+                {
+                    incomingArcs = new Collection<Arc>();
+                }
+                return incomingArcs;
+            }
+        }
+
+        public Collection<Arc> OutgoingArcs
+        {
+            get
+            {
+                if (outgoingArcs == null)
+                {
+                    outgoingArcs = new Collection<Arc>();
+                }
+                return outgoingArcs;
             }
         }
 
         public override string ToString()
         {
+            // Todo:implement it.
             return "{";
         }
     }
