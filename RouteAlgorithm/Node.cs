@@ -1,70 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RouteAlgorithm
 {
     public class Node
     {
-        private string nodeName;
-        private string traffic_sign;
-        private string city_limit;
-        private List<Arc> intersectArc ;
-        private List<Arc> adjacentArc;
-        private List<Node> adjacentNode ;
+        private string id;
+        private Coordinate coordinate;
+        private Dictionary<string, string> tags;
 
-        public Node() { }
+        private Collection<Arc> incomingArcs;
+        private Collection<Arc> outgoingArcs;
 
-        public Node(int id, float latitude, float longitude)
-        {
-            Coordinate co = new Coordinate();
-            co.Id = id;
-            co.Latitude = latitude;
-            co.Longitude = longitude;
+        public Node() 
+        { 
         }
 
-        public List<Arc> IntersectArc
+        public Node(string id, float latitude, float longitude)
+        {
+            this.id = id;
+            this.Coordinate = new Coordinate(latitude, longitude);
+        }
+
+        public string Id
+        {
+            get { return id; }
+            private set { id = value; }
+        }
+
+        public Coordinate Coordinate
+        {
+            get { return coordinate; }
+            set { coordinate = value; }
+        }
+
+        public Dictionary<string, string> Tags
         {
             get
             {
-                return intersectArc;
-            }
-
-            set
-            {
-                intersectArc = value;
-            }
-        }
-
-        public List<Arc> AdjacentArc
-        {
-            get
-            {
-                return adjacentArc;
-            }
-
-            set
-            {
-                adjacentArc = value;
+                if (tags == null)
+                {
+                    tags = new Dictionary<string, string>();
+                }
+                return tags; 
             }
         }
 
-        public List<Node> AdjacentNode
+        public Collection<Arc> IncomingArcs
         {
             get
             {
-                return adjacentNode;
+                if (incomingArcs == null)
+                {
+                    incomingArcs = new Collection<Arc>();
+                }
+                return incomingArcs;
             }
+        }
 
-            set
+        public Collection<Arc> OutgoingArcs
+        {
+            get
             {
-                adjacentNode = value;
+                if (outgoingArcs == null)
+                {
+                    outgoingArcs = new Collection<Arc>();
+                }
+                return outgoingArcs;
             }
         }
 
         public override string ToString()
         {
+            // Todo:implement it.
             return "{";
         }
     }

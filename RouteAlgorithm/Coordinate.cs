@@ -1,37 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace RouteAlgorithm
 {
     public  class Coordinate
     {
-        int id;
-        float latitude;
-        float longitude;
+        private float latitude;
+        private float longitude;
 
         public Coordinate()
-        {
-        }
+            :this(0.0f,0.0f)
+        { }
 
-        public Coordinate( int id,float latitude, float longitude)
+        public Coordinate(float latitude, float longitude)
         {
-            this.Latitude = latitude;
-            this.Longitude = longitude;
-        }
-
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-
-            set
-            {
-                id = value;
-            }
+            Latitude = latitude;
+            Longitude = longitude;
         }
 
         public float Latitude
@@ -40,7 +22,6 @@ namespace RouteAlgorithm
             {
                 return latitude;
             }
-
             set
             {
                 latitude = value;
@@ -62,7 +43,7 @@ namespace RouteAlgorithm
 
         public override string ToString()
         {
-            return "{" + Id + "," + Latitude + "," +Longitude+"}" ;
+            return string.Format("Latitude:{0}, Longitude:{1}", Latitude, Longitude);
         }
     }
 }

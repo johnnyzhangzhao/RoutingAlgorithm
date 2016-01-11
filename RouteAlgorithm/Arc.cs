@@ -1,45 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RouteAlgorithm
 {
     public class Arc
     {
-        private int headNodeId;
-        private int cost;
-        private char visible;
-        private Dictionary<string,string> tags;
-        private string arcName;
-        private string direction;
-        private float length;
-        private List<Node> intersectNode;
-        private List<Arc> adjacentArcs;
-        private List<Node> adjacentNodes;
+        private string id;
+        private float cost;
+        private Node tailNode;
+        private Node headNode;
+        private Collection<Node> intermediateNodes;
+        private RoadDirection direction;
+        private string name;
+        private Dictionary<string, string> tags;
 
-        public Arc() { }
+        private Collection<Arc> incomingArcs;
+        private Collection<Arc> outgoingArcs;
 
-        public Arc(int headNodeId, int cost)
+        public Arc()
         {
-            this.headNodeId = headNodeId;
+        }
+
+        public Arc(string id, Node headNode, Node tailNode, float cost)
+        {
             this.Cost = cost;
         }
 
-        public int HeadNodeId
+        public string Id
         {
-            get
-            {
-                return headNodeId;
-            }
-
-            set
-            {
-                headNodeId = value;
-            }
+            get { return id; }
+            private set { id = value; }
         }
 
-        public int Cost
+        public float Cost
         {
             get
             {
@@ -52,42 +45,46 @@ namespace RouteAlgorithm
             }
         }
 
-        public char Visible
+        public Node HeadNode
+        {
+            get { return headNode; }
+            set { headNode = value; }
+        }
+
+        public Node TailNode
+        {
+            get { return tailNode; }
+            set { tailNode = value; }
+        }
+
+        public Collection<Node> IntermediateNodes
         {
             get
             {
-                return visible;
-            }
-
-            set
-            {
-                visible = value;
+                if (intermediateNodes == null)
+                {
+                    intermediateNodes = new Collection<Node>();
+                }
+                return intermediateNodes;
             }
         }
 
-        public string ArcName
+        public RoadDirection Direction
         {
-            get
-            {
-                return arcName;
-            }
-
-            set
-            {
-                arcName = value;
-            }
+            get { return direction; }
+            set { direction = value; }
         }
 
-        public float Length
+        public string Name
         {
             get
             {
-                return length;
+                return name;
             }
 
             set
             {
-                length = value;
+                name = value;
             }
         }
 
@@ -103,9 +100,33 @@ namespace RouteAlgorithm
             }
         }
 
+        public Collection<Arc> IncomingArcs
+        {
+            get
+            {
+                if (incomingArcs == null)
+                {
+                    incomingArcs = new Collection<Arc>();
+                }
+                return incomingArcs;
+            }
+        }
+
+        public Collection<Arc> OutgoingArcs
+        {
+            get
+            {
+                if (outgoingArcs == null)
+                {
+                    outgoingArcs = new Collection<Arc>();
+                }
+                return outgoingArcs;
+            }
+        }
+
         public override string ToString()
         {
-            return "{"+HeadNodeId + "," + ArcName + "," +"}";
+            return "";
         }
     }
 }

@@ -44,6 +44,7 @@
     <Compile Include="Bounds.cs" />
     <Compile Include="Coordinate.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="RoadDirection.cs" />
     <Compile Include="RoadNetwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
