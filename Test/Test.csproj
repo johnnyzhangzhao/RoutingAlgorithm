@@ -61,6 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Data\roads.dbf" />
+    <None Include="Data\roads.ids" />
+    <None Include="Data\roads.idx" />
+    <None Include="Data\roads.shp" />
+    <None Include="Data\roads.shx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RouteAlgorithm\RouteAlgorithm.csproj">

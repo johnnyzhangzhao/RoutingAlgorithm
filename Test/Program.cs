@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ThinkGeo.MapSuite.Core;
 
 namespace Test
 {
@@ -11,7 +12,9 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            List<List<Arc>> adjacentArcs = new List<List<Arc>>();
+            RoadNetwork roadNetwork = new RoadNetwork();
+
+            ShapeFileFeatureSource shapeFileFeatureSource = new ShapeFileFeatureSource(@"");
         }
     }
 }
