@@ -8,25 +8,23 @@ namespace RouteAlgorithm
 {
     public class DijkstraAlgorithm
     {
+        private RoadNetwork graph;
         private Node startNode;
         private Node targetNode;
-        private Collection<Node> activeNode;
-        private Collection<Node> settleNode;
+        private Collection<Node> activeNodes;
+        private Collection<Node> settleNodes;
         private Queue<Node> shortNode;
 
         public DijkstraAlgorithm() { }
 
-        public DijkstraAlgorithm(Node startNode,Node targetNode)
+        public DijkstraAlgorithm(RoadNetwork graph)
         {
-            this.StartNode = startNode;
-            this.TargetNode = targetNode;
-            
+            this.graph = graph;
         }
-
 
         public Node StartNode
         {
-            set  {  startNode = value; }
+            set { startNode = value; }
         }
 
         public Node TargetNode
@@ -34,29 +32,29 @@ namespace RouteAlgorithm
             set { targetNode = value; }
         }
 
-        public Collection<Node> ActiveNode
+        public Collection<Node> ActiveNodes
         {
             get
             {
-                return activeNode;
+                return activeNodes;
             }
 
             set
             {
-                activeNode = value;
+                activeNodes = value;
             }
         }
 
-        public Collection<Node> SettleNode
+        public Collection<Node> SettleNodes
         {
             get
             {
-                return settleNode;
+                return settleNodes;
             }
 
             set
             {
-                settleNode = value;
+                settleNodes = value;
             }
         }
 
@@ -73,14 +71,37 @@ namespace RouteAlgorithm
             }
         }
 
-        public void GetShortPath(Node startNode,Node targetNode)
+        public void GetShortPath(Node startNode, Node targetNode)
         {
-            double minDistance=0;
+            Dictionary<Node, double> distance = new Dictionary<Node, double>();
+            Dictionary<Node, bool> isvisited = new Dictionary<Node, bool>();
+            Node currentNode = new Node();
+            Node activeNode = new Node();
+            int numSettledNodes = 0;
+            Collection<Arc> nodeAdjacentArc = graph.AdjacentArcs[currentNode];
+            Collection<Node> path = new Collection<Node>();
+            distance.Add(startNode, 0);
+            distance.Add(targetNode, -1);
+            double mincost = distance[nodeAdjacentArc[0].HeadNode];
+            currentNode = startNode;
+            while(currentNode!=targetNode || numSettledNodes<graph.Nodes.Count() )
+            {
+                for (int i = 0; i < nodeAdjacentArc.Count(); i++)
+                {
+                    if (distance[currentNode] + nodeAdjacentArc[i].Cost < distance[nodeAdjacentArc[i].HeadNode])
+                    {
+                        distance[nodeAdjacentArc[i].HeadNode] = distance[currentNode] + nodeAdjacentArc[i].Cost;
 
-        }
-        public void RelaxOutgoingArcs()
-        {
+                    }
 
+                    if (mincost - distance[nodeAdjacentArc[i].HeadNode] < 0)
+                    {
+                        mincost = distance[nodeAdjacentArc[i].HeadNode];
+                        currentNode = nodeAdjacentArc[i].HeadNode;
+                    }
+                }
+                path.Add(currentNode);
+            }        
         }
     }
 }
