@@ -1,12 +1,14 @@
 ﻿using RouteAlgorithm;
 using System;
 using System.Collections.Generic;
+<<<<<<< ours
 using System.Collections.ObjectModel;
 using System.Globalization;
+=======
+>>>>>>> theirs
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ThinkGeo.MapSuite.Core;
 
 namespace Test
 {
@@ -14,6 +16,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
+<<<<<<< ours
             RoadNetwork roadNetwork = new RoadNetwork();
 
             ShapeFileFeatureSource shapeFileFeatureSource = new ShapeFileFeatureSource(@"..\..\Data\roads.shp");
@@ -167,6 +170,9 @@ namespace Test
             }
 
             return lineShapes;
+=======
+            List<List<Arc>> adjacentArcs = new List<List<Arc>>();
+>>>>>>> theirs
         }
     }
 }
