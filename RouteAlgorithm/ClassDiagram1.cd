@@ -1,28 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="RouteAlgorithm.Arc">
-    <Position X="3.25" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>EAICAAACAAAQIAAEECAAABQAAAAUAEABAIBAARCAAgA=</HashCode>
-      <FileName>Arc.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="RouteAlgorithm.Node">
-    <Position X="7.5" Y="0.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAICAAACAAAABAAEAAQAAAAAAAAAAEABAABAAQAAAgA=</HashCode>
-      <FileName>Node.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="RouteAlgorithm.RoadNetwork">
-    <Position X="5.5" Y="0.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAQgAAAAAAAAAAAAAAAAAAAAAAAEAAAABAACAAAEIgA=</HashCode>
-      <FileName>RoadNetwork.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="RouteAlgorithm.Bounds">
-    <Position X="9.5" Y="0.5" Width="1.75" />
+    <Position X="6.25" Y="2.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -31,8 +10,18 @@
       <FileName>Bounds.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="RouteAlgorithm.Arc">
+    <Position X="2.25" Y="0.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>EAICAAACAAAQIAAEEGQAABRBAAAUAUABAIBAARCAAgA=</HashCode>
+      <FileName>Arc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="RouteAlgorithm.Coordinate">
-    <Position X="11.5" Y="0.5" Width="2" />
+    <Position X="6.25" Y="0.5" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -41,5 +30,39 @@
       <FileName>Coordinate.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="RouteAlgorithm.Node">
+    <Position X="4.25" Y="0.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAICAAACAAAABAAEAAQAAAAAAAAAAEABAABAAQAAAgA=</HashCode>
+      <FileName>Node.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RouteAlgorithm.RoadNetwork">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AQQgAAAAAAAAAAAAAAAAAAAAAAAEAAAABAACAAAEIgA=</HashCode>
+      <FileName>RoadNetwork.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="RouteAlgorithm.RoadDirection">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>RoadDirection.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="RouteAlgorithm.RoadSpeed">
+    <Position X="8.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAACAAABAIAAAAAAAgAADAAAQAAAACACMIgAAAAAAA=</HashCode>
+      <FileName>RoadSpeed.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
