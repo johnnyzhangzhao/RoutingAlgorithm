@@ -1,72 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace RouteAlgorithm
 {
     public class Bounds
     {
-        float minlat;
-        float maxlat;
-        float minlon;
-        float maxlon;
+        private float minLatitude;
+        private float maxLatitude;
+        private float minLongitude;
+        private float maxLongitude;
 
-        public float Minlat
+        public float MinLatitude
+        {
+            get { return minLatitude; }
+
+            set {  minLatitude = value; }
+        }
+
+        public float MaxLatitude
+        {
+            get {  return maxLatitude; }
+
+            set { maxLatitude = value; }
+        }
+
+        public float MinLongitude
         {
             get
             {
-                return minlat;
+                return minLongitude;
             }
 
             set
             {
-                minlat = value;
+                minLongitude = value;
             }
         }
 
-        public float Maxlat
+        public float MaxLongitude
         {
             get
             {
-                return maxlat;
+                return maxLongitude;
             }
 
             set
             {
-                maxlat = value;
-            }
-        }
-
-        public float Minlon
-        {
-            get
-            {
-                return minlon;
-            }
-
-            set
-            {
-                minlon = value;
-            }
-        }
-
-        public float Maxlon
-        {
-            get
-            {
-                return maxlon;
-            }
-
-            set
-            {
-                maxlon = value;
+                maxLongitude = value;
             }
         }
 
         public override string ToString()
         {
-            return "{"+Minlat+","+Minlon+","+Maxlat+","+Maxlon+"}";
+            return string.Format("minLatitude:{0},minLogitude:{1},maxLatitude:{2}, MaxLongitude:{3}", MinLatitude, MinLongitude, MaxLatitude, MaxLongitude);
         }
     }
 }
