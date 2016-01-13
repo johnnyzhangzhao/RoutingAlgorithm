@@ -43,6 +43,7 @@
     <Compile Include="Arc.cs" />
     <Compile Include="Bounds.cs" />
     <Compile Include="Coordinate.cs" />
+    <Compile Include="DijkstraAlgorithm.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="RoadDirection.cs" />
     <Compile Include="RoadNetwork.cs" />
