@@ -16,7 +16,7 @@ namespace RouteAlgorithm
         private Queue<Node> shortNode;
 
 
-        private Dictionary<Node, double> visitedNodeMarks;
+        private Dictionary<string, double> visitedNodeMarks;
 
         public DijkstraAlgorithm() { }
 
@@ -74,7 +74,7 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<Node, double> VisitedNodeMarks
+        public Dictionary<string, double> VisitedNodeMarks
         {
             get
             {
@@ -91,61 +91,71 @@ namespace RouteAlgorithm
         {
             Dictionary<Node, double> distance = new Dictionary<Node, double>();
             //Dictionary<Node, bool> isvisited = new Dictionary<Node, bool>();
-            Node currentNode = new Node();
-            Node activeNode = new Node();       
+            //Node currentNode = new Node();
+            //Node activeNode = new Node();       
             int numSettledNodes = 0;
-            Collection<Arc> nodeAdjacentArc = graph.AdjacentArcs[currentNode];
+            
             Collection<Node> path = new Collection<Node>();
-            distance.Add(startNode, 0);
+            //distance.Add(startNode, 0);
             distance.Add(targetNode, -1);
-            double mincost = distance[nodeAdjacentArc[0].HeadNode];
-            currentNode = startNode;
+            
 
 
             double shortestPathCost = 0;
             double distToAdjNode = 0;
-            visitedNodeMarks = new Dictionary<Node, double>();
-            Queue<Node> pq = new Queue<Node>();
-            pq.Enqueue(startNode);
+            visitedNodeMarks = new Dictionary<string, double>();
+            
+            ActiveNode activeNode=new ActiveNode (startNode.Id,0);
+            Queue<ActiveNode> pq = new Queue<ActiveNode>();
+            pq.Enqueue(activeNode);
+            
             while(pq.Count()!=0)
             {
-                //ActiveNode currentNode=pq.
-                //if (isvisited(currentNode))
-                //{
-                //    continue;
-                //}
+                ActiveNode currentNode = pq.Dequeue();
+                if (isvisited(currentNode.id))
+                {
+                    continue;
+                }
 
-                //visitedNodeMarks.Add(currentNode, distance[currentNode]);
-                //numSettledNodes++;
-                //if (currentNode.Id == targetNode.Id)
-                //{
-                //    shortestPathCost = distance[currentNode];
-                //    break;
-                //}
-                //if ( numSettledNodes > graph.Nodes.Count() )
-                //{
-                //    shortestPathCost = 99999999999;
-                //    break;
-                //}
+                visitedNodeMarks.Add(currentNode.id, currentNode.dist);
+                numSettledNodes++;
+                if (currentNode.id == targetNode.Id)
+                {
+                    shortestPathCost = currentNode.dist;
+                    break;
+                }
+                if (numSettledNodes > graph.Nodes.Count())
+                {
+                    shortestPathCost = 99999999999;
+                    break;
+                }
+
                 
-                //Collection<Arc> nodeAdjacentArc1 = graph.AdjacentArcs[currentNode];
-                //for(int i=0;i<nodeAdjacentArc.Count();i++)
-                //{
-                //    Arc arc;
-                //    arc = nodeAdjacentArc[i];
-                //    if (!isvisited(nodeAdjacentArc[i].HeadNode))
-                //    {
-                //        distToAdjNode = currentNode.+ nodeAdjacentArc[i].Cost;
-                //        activeNode=new ActiveNode(arc.HeadNode.Id,) 
-                //    }
-                //}
+                Node curNode;
+                curNode = graph.MapNodes[currentNode.id];
+                Collection<Arc> nodeAdjacentArc = graph.AdjacentArcs[curNode];
+                for (int i = 0; i < nodeAdjacentArc.Count(); i++)
+                {
+                    double minCost = 0;
+                    Arc arc;
+                    arc = nodeAdjacentArc[i];
+                    if (!isvisited(arc.HeadNode.Id))
+                    {
+                        distToAdjNode = currentNode.dist+ nodeAdjacentArc[i].Cost;
+                        activeNode = new ActiveNode(arc.HeadNode.Id, distToAdjNode);
+                    }
+                    if (activeNode.dist < minCost)
+                    {
+                        pq.Enqueue(activeNode);
+                    }
+                }
             }
             return shortestPathCost;    
         }
 
-        public bool isvisited(Node node)
+        public bool isvisited(string nodeId)
         {
-            if (visitedNodeMarks.ContainsKey(node))
+            if (visitedNodeMarks.ContainsKey(nodeId))
             {
                 return true;
             }

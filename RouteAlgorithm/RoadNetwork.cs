@@ -8,6 +8,7 @@ namespace RouteAlgorithm
         private Bounds bounds;
         private List<Arc> arcs;
         private List<Node> nodes;
+        private Dictionary<string, Node> mapNodes;
 
         // Create a adjacent list to store the whole network
         private Dictionary<Node, Collection<Arc>> adjacentArcs;
@@ -61,6 +62,18 @@ namespace RouteAlgorithm
                     adjacentArcs = new Dictionary<Node, Collection<Arc>>();
                 }
                 return adjacentArcs; 
+            }
+        }
+
+        public Dictionary<string, Node> MapNodes
+        {
+            get
+            {
+                if (mapNodes == null)
+                {
+                    mapNodes = new Dictionary<string, Node>();
+                }
+                return mapNodes;
             }
         }
     }
