@@ -2,7 +2,6 @@
 {
     public  class Coordinate
     {
-        int id;
         float latitude;
         float longitude;
 
@@ -14,19 +13,6 @@
         {
             this.Latitude = latitude;
             this.Longitude = longitude;
-        }
-
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-
-            set
-            {
-                id = value;
-            }
         }
 
         public float Latitude
@@ -57,7 +43,7 @@
 
         public override string ToString()
         {
-            return "{" + Id + "," + Latitude + "," +Longitude+"}" ;
+            return string.Format("longitude:{0},latitude:{1}",longitude,latitude); 
         }
     }
 }
