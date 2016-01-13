@@ -10,7 +10,7 @@
         {
         }
 
-        public Coordinate( int id,float latitude, float longitude)
+        public Coordinate( float latitude, float longitude)
         {
             this.Latitude = latitude;
             this.Longitude = longitude;
