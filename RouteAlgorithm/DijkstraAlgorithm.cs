@@ -15,9 +15,6 @@ namespace RouteAlgorithm
         private Collection<Node> settleNodes;
         private Queue<Node> shortNode;
 
-
-        private Dictionary<Node, double> visitedNodeMarks;
-
         public DijkstraAlgorithm() { }
 
         public DijkstraAlgorithm(RoadNetwork graph)
@@ -74,25 +71,12 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<Node, double> VisitedNodeMarks
-        {
-            get
-            {
-                return visitedNodeMarks;
-            }
-
-            set
-            {
-                visitedNodeMarks = value;
-            }
-        }
-
-        public double GetShortPath(Node startNode, Node targetNode)
+        public void GetShortPath(Node startNode, Node targetNode)
         {
             Dictionary<Node, double> distance = new Dictionary<Node, double>();
-            //Dictionary<Node, bool> isvisited = new Dictionary<Node, bool>();
+            Dictionary<Node, bool> isvisited = new Dictionary<Node, bool>();
             Node currentNode = new Node();
-            Node activeNode = new Node();       
+            Node activeNode = new Node();
             int numSettledNodes = 0;
             Collection<Arc> nodeAdjacentArc = graph.AdjacentArcs[currentNode];
             Collection<Node> path = new Collection<Node>();
@@ -100,56 +84,24 @@ namespace RouteAlgorithm
             distance.Add(targetNode, -1);
             double mincost = distance[nodeAdjacentArc[0].HeadNode];
             currentNode = startNode;
-
-
-            double shortestPathCost = 0;
-            double distToAdjNode = 0;
-            visitedNodeMarks = new Dictionary<Node, double>();
-            Queue<Node> pq = new Queue<Node>();
-            pq.Enqueue(startNode);
-            while(pq.Count()!=0)
+            while(currentNode!=targetNode || numSettledNodes<graph.Nodes.Count() )
             {
-                //ActiveNode currentNode=pq.
-                //if (isvisited(currentNode))
-                //{
-                //    continue;
-                //}
+                for (int i = 0; i < nodeAdjacentArc.Count(); i++)
+                {
+                    if (distance[currentNode] + nodeAdjacentArc[i].Cost < distance[nodeAdjacentArc[i].HeadNode])
+                    {
+                        distance[nodeAdjacentArc[i].HeadNode] = distance[currentNode] + nodeAdjacentArc[i].Cost;
 
-                //visitedNodeMarks.Add(currentNode, distance[currentNode]);
-                //numSettledNodes++;
-                //if (currentNode.Id == targetNode.Id)
-                //{
-                //    shortestPathCost = distance[currentNode];
-                //    break;
-                //}
-                //if ( numSettledNodes > graph.Nodes.Count() )
-                //{
-                //    shortestPathCost = 99999999999;
-                //    break;
-                //}
-                
-                //Collection<Arc> nodeAdjacentArc1 = graph.AdjacentArcs[currentNode];
-                //for(int i=0;i<nodeAdjacentArc.Count();i++)
-                //{
-                //    Arc arc;
-                //    arc = nodeAdjacentArc[i];
-                //    if (!isvisited(nodeAdjacentArc[i].HeadNode))
-                //    {
-                //        distToAdjNode = currentNode.+ nodeAdjacentArc[i].Cost;
-                //        activeNode=new ActiveNode(arc.HeadNode.Id,) 
-                //    }
-                //}
-            }
-            return shortestPathCost;    
-        }
+                    }
 
-        public bool isvisited(Node node)
-        {
-            if (visitedNodeMarks.ContainsKey(node))
-            {
-                return true;
-            }
-            return false;
+                    if (mincost - distance[nodeAdjacentArc[i].HeadNode] < 0)
+                    {
+                        mincost = distance[nodeAdjacentArc[i].HeadNode];
+                        currentNode = nodeAdjacentArc[i].HeadNode;
+                    }
+                }
+                path.Add(currentNode);
+            }        
         }
     }
 }

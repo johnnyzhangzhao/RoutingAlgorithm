@@ -1,56 +1,72 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace RouteAlgorithm
 {
     public class Bounds
     {
-        private float minLatitude;
-        private float maxLatitude;
-        private float minLongitude;
-        private float maxLongitude;
+        float minlat;
+        float maxlat;
+        float minlon;
+        float maxlon;
 
-        public float MinLatitude
-        {
-            get { return minLatitude; }
-
-            set {  minLatitude = value; }
-        }
-
-        public float MaxLatitude
-        {
-            get {  return maxLatitude; }
-
-            set { maxLatitude = value; }
-        }
-
-        public float MinLongitude
+        public float Minlat
         {
             get
             {
-                return minLongitude;
+                return minlat;
             }
 
             set
             {
-                minLongitude = value;
+                minlat = value;
             }
         }
 
-        public float MaxLongitude
+        public float Maxlat
         {
             get
             {
-                return maxLongitude;
+                return maxlat;
             }
 
             set
             {
-                maxLongitude = value;
+                maxlat = value;
+            }
+        }
+
+        public float Minlon
+        {
+            get
+            {
+                return minlon;
+            }
+
+            set
+            {
+                minlon = value;
+            }
+        }
+
+        public float Maxlon
+        {
+            get
+            {
+                return maxlon;
+            }
+
+            set
+            {
+                maxlon = value;
             }
         }
 
         public override string ToString()
         {
-            return string.Format("minLatitude:{0},minLogitude:{1},maxLatitude:{2}, MaxLongitude:{3}", MinLatitude, MinLongitude, MaxLatitude, MaxLongitude);
+            return "{"+Minlat+","+Minlon+","+Maxlat+","+Maxlon+"}";
         }
     }
 }
