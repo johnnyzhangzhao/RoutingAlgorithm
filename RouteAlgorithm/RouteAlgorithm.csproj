@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveNode.cs" />
     <Compile Include="Arc.cs" />
     <Compile Include="Bounds.cs" />
     <Compile Include="Coordinate.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="RoadDirection.cs" />
     <Compile Include="RoadNetwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoadSpeed.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
