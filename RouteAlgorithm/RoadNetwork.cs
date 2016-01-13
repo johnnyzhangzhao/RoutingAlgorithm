@@ -8,10 +8,10 @@ namespace RouteAlgorithm
         private Bounds bounds;
         private List<Arc> arcs;
         private List<Node> nodes;
+
         // Create a adjacent list to store the whole network
         private Dictionary<Node, Collection<Arc>> adjacentArcs;
 
-        
         public RoadNetwork()
         {
         }
@@ -62,13 +62,6 @@ namespace RouteAlgorithm
                 }
                 return adjacentArcs; 
             }
-        }
-
-
-        public double GetCost(Arc road)
-        {
-            road.Cost = road.Length / (int)road.Speed*60;
-            return road.Cost;
         }
     }
 }

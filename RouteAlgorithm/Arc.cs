@@ -6,12 +6,9 @@ namespace RouteAlgorithm
     public class Arc
     {
         private string id;
-        private Coordinate coordinate;
-        private double cost;
+        private float cost;
         private Node tailNode;
         private Node headNode;
-        private double length;
-        private RoadSpeed speed;
         private Collection<Node> intermediateNodes;
         private RoadDirection direction;
         private string name;
@@ -35,10 +32,17 @@ namespace RouteAlgorithm
             private set { id = value; }
         }
 
-        public double Cost
+        public float Cost
         {
-            get { return cost; }
-            set { cost = value; }
+            get
+            {
+                return cost;
+            }
+
+            set
+            {
+                cost = value;
+            }
         }
 
         public Node HeadNode
@@ -51,27 +55,6 @@ namespace RouteAlgorithm
         {
             get { return tailNode; }
             set { tailNode = value; }
-        }
-
-
-        public double Length
-        {
-            get
-            {
-                return length;
-            }
-
-            set
-            {
-                length = value;
-            }
-        }
-
-
-        public RoadSpeed Speed
-        {
-            get { return speed; }
-            set { speed = value; }
         }
 
         public Collection<Node> IntermediateNodes
@@ -143,7 +126,7 @@ namespace RouteAlgorithm
 
         public override string ToString()
         {
-            return string.Format("id:{0},headNode:{3},tailNode:{4},cost:{5}", id, headNode, tailNode, cost);
+            return "";
         }
     }
 }

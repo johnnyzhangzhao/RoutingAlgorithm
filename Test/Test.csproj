@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Test</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSScriptLibrary">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\CSScriptLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="GeoAPI">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\GeoAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="MapSuiteCore">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\MapSuiteCore.dll</HintPath>
+    </Reference>
+    <Reference Include="NetTopologySuite">
+      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\NetTopologySuite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,11 +56,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeometryHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Data\roads.dbf" />
+    <None Include="Data\roads.ids" />
+    <None Include="Data\roads.idx" />
+    <None Include="Data\roads.shp" />
+    <None Include="Data\roads.shx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RouteAlgorithm\RouteAlgorithm.csproj">

@@ -1,72 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace RouteAlgorithm
 {
     public class Bounds
     {
-        float minlat;
-        float maxlat;
-        float minlon;
-        float maxlon;
+        private float minLatitude;
+        private float maxLatitude;
+        private float minLongitude;
+        private float maxLongitude;
 
-        public float Minlat
+        public float MinLatitude
         {
             get
             {
-                return minlat;
+                return minLatitude;
             }
 
             set
             {
-                minlat = value;
+                minLatitude = value;
             }
         }
 
-        public float Maxlat
+        public float MaxLatitude
         {
             get
             {
-                return maxlat;
+                return maxLatitude;
             }
 
             set
             {
-                maxlat = value;
+                maxLatitude = value;
             }
         }
 
-        public float Minlon
+        public float MinLongitude
         {
             get
             {
-                return minlon;
+                return minLongitude;
             }
 
             set
             {
-                minlon = value;
+                minLongitude = value;
             }
         }
 
-        public float Maxlon
+        public float MaxLongitude
         {
             get
             {
-                return maxlon;
+                return maxLongitude;
             }
 
             set
             {
-                maxlon = value;
+                maxLongitude = value;
             }
         }
 
         public override string ToString()
         {
-            return "{"+Minlat+","+Minlon+","+Maxlat+","+Maxlon+"}";
+            return string.Format("minLatitude:{0},minLogitude:{1},maxLatitude:{2}, MaxLongitude:{3}", MinLatitude, MinLongitude, MaxLatitude, MaxLongitude);
         }
     }
 }

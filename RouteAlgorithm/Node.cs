@@ -8,6 +8,7 @@ namespace RouteAlgorithm
         private string id;
         private Coordinate coordinate;
         private Dictionary<string, string> tags;
+
         private Collection<Arc> incomingArcs;
         private Collection<Arc> outgoingArcs;
 

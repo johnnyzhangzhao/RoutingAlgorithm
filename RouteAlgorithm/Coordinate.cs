@@ -1,18 +1,19 @@
-﻿namespace RouteAlgorithm
+﻿
+namespace RouteAlgorithm
 {
     public  class Coordinate
     {
-        float latitude;
-        float longitude;
+        private float latitude;
+        private float longitude;
 
         public Coordinate()
-        {
-        }
+            :this(0.0f,0.0f)
+        { }
 
-        public Coordinate( float latitude, float longitude)
+        public Coordinate(float latitude, float longitude)
         {
-            this.Latitude = latitude;
-            this.Longitude = longitude;
+            Latitude = latitude;
+            Longitude = longitude;
         }
 
         public float Latitude
@@ -21,7 +22,6 @@
             {
                 return latitude;
             }
-
             set
             {
                 latitude = value;
@@ -43,7 +43,7 @@
 
         public override string ToString()
         {
-            return string.Format("longitude:{0},latitude:{1}",longitude,latitude); 
+            return string.Format("Latitude:{0}, Longitude:{1}", Latitude, Longitude);
         }
     }
 }
