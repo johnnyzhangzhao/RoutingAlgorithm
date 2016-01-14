@@ -9,6 +9,9 @@ namespace RouteAlgorithm
     {
         public string id;
         public double dist;
+
+        public ActiveNode() { }
+
         public ActiveNode(string id, double dist)
         {
             this.id = id;

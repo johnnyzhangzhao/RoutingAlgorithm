@@ -11,12 +11,10 @@ namespace RouteAlgorithm
         private RoadNetwork graph;
         private Node startNode;
         private Node targetNode;
-        private Collection<Node> activeNodes;
+        private Dictionary<string, double> visitedNodeMarks;
+        private Collection<ActiveNode> activeNodes;
         private Collection<Node> settleNodes;
         private Queue<Node> shortNode;
-
-
-        private Dictionary<string, double> visitedNodeMarks;
 
         public DijkstraAlgorithm() { }
 
@@ -35,16 +33,27 @@ namespace RouteAlgorithm
             set { targetNode = value; }
         }
 
-        public Collection<Node> ActiveNodes
+        public Dictionary<string, double> VisitedNodeMarks
         {
             get
             {
-                return activeNodes;
+                if (visitedNodeMarks == null)
+                {
+                    visitedNodeMarks = new Dictionary<string, double>();
+                }
+                return visitedNodeMarks;
             }
+        }
 
-            set
+        public Collection<ActiveNode> ActiveNodes
+        {
+            get
             {
-                activeNodes = value;
+                if (activeNodes == null)
+                {
+                    activeNodes = new Collection<ActiveNode>();
+                }
+                return activeNodes;
             }
         }
 
@@ -74,49 +83,39 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<string, double> VisitedNodeMarks
+        public double CompareCost(ActiveNode n1, ActiveNode n2)
         {
-            get
+            double dist = n1.dist - n2.dist;
+            if (dist < 0)
             {
-                return visitedNodeMarks;
+                return n1.dist;
             }
-
-            set
-            {
-                visitedNodeMarks = value;
-            }
+            return n2.dist;
         }
 
         public double GetShortPath(Node startNode, Node targetNode)
         {
-            Dictionary<Node, double> distance = new Dictionary<Node, double>();
-            //Dictionary<Node, bool> isvisited = new Dictionary<Node, bool>();
-            //Node currentNode = new Node();
-            //Node activeNode = new Node();       
-            int numSettledNodes = 0;
+            Dictionary<Node, double> distance = new Dictionary<Node, double>();      
             
-            Collection<Node> path = new Collection<Node>();
-            //distance.Add(startNode, 0);
-            distance.Add(targetNode, -1);
             
 
 
-            double shortestPathCost = 0;
-            double distToAdjNode = 0;
             visitedNodeMarks = new Dictionary<string, double>();
-            
-            ActiveNode activeNode=new ActiveNode (startNode.Id,0);
-            Queue<ActiveNode> pq = new Queue<ActiveNode>();
+            double shortestPathCost = 0;
+            int numSettledNodes = 0;
+            double distToAdjNode = 0;
+            ActiveNode activeNode = new ActiveNode (startNode.Id,0);      
+            Queue<ActiveNode> pq = new Queue<ActiveNode>(1);
             pq.Enqueue(activeNode);
             
             while(pq.Count()!=0)
             {
-                ActiveNode currentNode = pq.Dequeue();
+                ActiveNodes.Add(pq.Dequeue());
+                ActiveNode currentNode = ActiveNodes[activeNodes.Count()];
                 if (isvisited(currentNode.id))
                 {
                     continue;
                 }
-
                 visitedNodeMarks.Add(currentNode.id, currentNode.dist);
                 numSettledNodes++;
                 if (currentNode.id == targetNode.Id)
@@ -128,17 +127,17 @@ namespace RouteAlgorithm
                 {
                     shortestPathCost = 99999999999;
                     break;
-                }
-
-                
+                }               
                 Node curNode;
                 curNode = graph.MapNodes[currentNode.id];
                 Collection<Arc> nodeAdjacentArc = graph.AdjacentArcs[curNode];
+                
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
-                    double minCost = 0;
                     Arc arc;
                     arc = nodeAdjacentArc[i];
+                    double minCost = 0;
+                    minCost = activeNode.dist;
                     if (!isvisited(arc.HeadNode.Id))
                     {
                         distToAdjNode = currentNode.dist+ nodeAdjacentArc[i].Cost;
