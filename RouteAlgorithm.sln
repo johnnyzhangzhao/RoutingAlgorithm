@@ -1,13 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteAlgorithm", "RouteAlgorithm\RouteAlgorithm.csproj", "{C5D38DAE-AEAF-4491-9EC4-749888A3DC6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{9CF78C27-3C0F-4142-B3B7-EFAD77B58FDC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteAlgorithmTests", "RouteAlgorithmTests\RouteAlgorithmTests.csproj", "{E6FAA367-2AE1-4C0B-A4C3-C50BB3B90446}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependency", "Dependency", "{63ED8376-27F0-4C91-B3F3-86A3A18C1A37}"
+	ProjectSection(SolutionItems) = preProject
+		Dependency\CSScriptLibrary.dll = Dependency\CSScriptLibrary.dll
+		Dependency\GeoAPI.dll = Dependency\GeoAPI.dll
+		Dependency\MapSuiteCore.dll = Dependency\MapSuiteCore.dll
+		Dependency\Microsoft.SqlServer.Types.dll = Dependency\Microsoft.SqlServer.Types.dll
+		Dependency\NetTopologySuite.dll = Dependency\NetTopologySuite.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

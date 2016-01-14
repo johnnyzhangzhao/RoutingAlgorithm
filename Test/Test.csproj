@@ -34,17 +34,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSScriptLibrary">
-      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\CSScriptLibrary.dll</HintPath>
+    <Reference Include="CSScriptLibrary, Version=3.6.0.0, Culture=neutral, PublicKeyToken=70fcc3d18c749033, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependency\CSScriptLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="GeoAPI">
-      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\GeoAPI.dll</HintPath>
+    <Reference Include="GeoAPI, Version=1.1.0.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependency\GeoAPI.dll</HintPath>
     </Reference>
-    <Reference Include="MapSuiteCore">
-      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\MapSuiteCore.dll</HintPath>
+    <Reference Include="MapSuiteCore, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependency\MapSuiteCore.dll</HintPath>
     </Reference>
-    <Reference Include="NetTopologySuite">
-      <HintPath>..\..\..\Program Files (x86)\ThinkGeo\Map Suite 9.0\Map Suite Desktop\Current Version\Managed Assemblies\NetTopologySuite.dll</HintPath>
+    <Reference Include="NetTopologySuite, Version=1.7.3.31740, Culture=neutral, PublicKeyToken=f580a05016ebada1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependency\NetTopologySuite.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
