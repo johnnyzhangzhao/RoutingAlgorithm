@@ -10,6 +10,7 @@ namespace Test
     public class StreamSource
     {
         private double tolerance;
+        private string onewayColumn;
 
         public StreamSource()
         {
@@ -20,6 +21,24 @@ namespace Test
         {
             get { return tolerance; }
             set { tolerance = value; }
+        }
+
+        public GeographyUnit DataUnit
+        {
+            get;
+            set;
+        }
+
+        public DistanceUnit DistanceUnit
+        {
+            get;
+            set;
+        }
+
+        public string OnewayColumn
+        {
+            get { return onewayColumn; }
+            set { onewayColumn = value; }
         }
 
         public virtual RoadNetwork CreateNetwork(FeatureSource featureSource)
@@ -34,27 +53,7 @@ namespace Test
                 // Get the lineshape of the processing feature.
                 foreach (LineShape processingLineShape in processingLineShapes)
                 {
-                    Vertex startVertex = processingLineShape.Vertices[0];
-
-                    // Create node based on vertex.
-                    Node node = new Node(roadNetwork.Nodes.Count.ToString(CultureInfo.InvariantCulture), (float)startVertex.X, (float)startVertex.Y);
-
-                    RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(startVertex, tolerance);
-                    // Get all the lines in current processing shape bounds.
-                    Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(startSmallBounds, ReturningColumnsType.NoColumns);
-                    // Loop and see if the queried shape is intersected with processing shape.
-                    foreach (Feature adjacentFeature in adjacentFeatures)
-                    {
-                        // Given the adjacent line is line shape, and create adjacent list without un-direction consideration.
-                        LineShape adjacentLineShape = GeometryHelper.GetLineShapes(feature)[0];
-
-                        // Check if it's start vertext or end vertex of the adjacent line shape.
-                        int vertexIndex = 0;
-                        if (GeometryHelper.IsSamePoint(startVertex, adjacentLineShape.Vertices[adjacentLineShape.Vertices.Count - 1], tolerance))
-                        {
-                            vertexIndex = adjacentLineShape.Vertices.Count - 1;
-                        }
-                    }
+                    CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[0]);
 
 
                     Vertex endVertex = processingLineShape.Vertices[processingLineShape.Vertices.Count - 1];
@@ -65,6 +64,60 @@ namespace Test
 
 
             return roadNetwork;
+        }
+
+        private void CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
+        {
+            // Create node based on vertex.
+            // Todo: check if it has been existed.
+            Collection<Feature> adjacentTailNodeFeatures = GetAdjacentFeaturesOfVertex(featureSource, vertex);
+            Node tailNode = InitializeNodeFromVeterx(vertex, adjacentTailNodeFeatures);
+            roadNetwork.Nodes.Add(tailNode);
+
+            // Loop and see if the queried shape is intersected with processing shape.
+            foreach (Feature adjacentTailNodeFeature in adjacentTailNodeFeatures)
+            {
+                // Given the adjacent line is line shape, and create adjacent list without un-direction consideration.
+                LineShape adjacentLineShape = GeometryHelper.GetLineShapes(adjacentTailNodeFeature)[0];
+                adjacentLineShape.Id = adjacentTailNodeFeature.Id;
+
+
+                // Check if it's start vertext or end vertex of the adjacent line shape.
+                int vertexIndex = 0;
+                if (GeometryHelper.IsSamePoint(vertex, adjacentLineShape.Vertices[adjacentLineShape.Vertices.Count - 1], tolerance))
+                {
+                    vertexIndex = adjacentLineShape.Vertices.Count - 1;
+                }
+
+                // Todo: check if it has been existed.
+                Collection<Feature> adjacentHeadNodeFeatures = GetAdjacentFeaturesOfVertex(featureSource, adjacentLineShape.Vertices[vertexIndex]);
+                Node headNode = InitializeNodeFromVeterx(adjacentLineShape.Vertices[vertexIndex], adjacentHeadNodeFeatures);
+                roadNetwork.Nodes.Add(headNode);
+
+                Arc adjacentArc = new Arc(adjacentTailNodeFeature.Id, headNode, tailNode, CalculateRoadCost(adjacentLineShape));
+
+                // Check if the direction is the allowed of current segment?
+                RoadDirection roadDirection = CalculateRoadDirection(adjacentTailNodeFeature, adjacentLineShape, vertex);
+                if (roadDirection == RoadDirection.Forward)
+                {
+                    tailNode.OutgoingArcs.Add(adjacentArc);
+                }
+                else if (roadDirection == RoadDirection.Backward)
+                {
+                    tailNode.IncomingArcs.Add(adjacentArc);
+                }
+            }
+        }
+
+        public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
+        {
+            // Todo: check one-way roads is right to the specific direction.
+            return true;
+        }
+
+        public virtual float CalculateRoadCost(LineShape lineShape)
+        {
+            return (float)lineShape.GetLength(DataUnit, DistanceUnit);
         }
 
         public virtual void ImportData(FeatureSource featureSourceForRead, FeatureSource featureSourceForSave)
@@ -127,6 +180,56 @@ namespace Test
 
             featureSourceForRead.Close();
             featureSourceForSave.Close();
+        }
+
+        private RoadDirection CalculateRoadDirection(Feature feature, LineShape lineShape, Vertex startVertex)
+        {
+            int index = 0;  // Given the vertex is the first of input line shape.
+            if (!GeometryHelper.IsSamePoint(lineShape.Vertices[0], startVertex, Tolerance))
+            {
+                index = lineShape.Vertices.Count - 1;
+            }
+
+            RoadDirection direction = RoadDirection.Noway;
+            if (index == 0)
+            {
+                if (IsRoadDirectionAccessable(feature, RoadDirection.Forward))
+                {
+                    direction = RoadDirection.Forward;
+                }
+            }
+            else
+            {
+                if (IsRoadDirectionAccessable(feature, RoadDirection.Backward))
+                {
+                    direction = RoadDirection.Backward;
+                }
+            }
+
+            return direction;
+        }
+
+        private Collection<Feature> GetAdjacentFeaturesOfVertex(FeatureSource featureSource, Vertex vertex)
+        {
+            RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(vertex, tolerance);
+            // Get all the lines in current processing shape bounds.
+            Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(startSmallBounds, ReturningColumnsType.NoColumns);
+
+            return adjacentFeatures;
+        }
+
+        private Node InitializeNodeFromVeterx(Vertex vertex, Collection<Feature> adjacentFeatures)
+        {
+            List<string> ids = new List<string>();
+            foreach (var feature in adjacentFeatures)
+            {
+                ids.Add(feature.Id);
+            }
+            ids.Sort((x, y) => string.Compare(x, y));
+            string id = string.Join("_", ids.ToArray());
+
+            Node node = new Node(id, (float)vertex.Y, (float)vertex.X);
+            return node;
         }
     }
 }
