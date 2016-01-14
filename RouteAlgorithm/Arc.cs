@@ -5,7 +5,6 @@ namespace RouteAlgorithm
 {
     public class Arc
     {
-        private string id;
         private float cost;
         private Node tailNode;
         private Node headNode;
@@ -21,15 +20,9 @@ namespace RouteAlgorithm
         {
         }
 
-        public Arc(string id, Node headNode, Node tailNode, float cost)
+        public Arc( Node headNode, Node tailNode, float cost)
         {
             this.Cost = cost;
-        }
-
-        public string Id
-        {
-            get { return id; }
-            private set { id = value; }
         }
 
         public float Cost
@@ -126,7 +119,7 @@ namespace RouteAlgorithm
 
         public override string ToString()
         {
-            return "";
+            return string.Format("headNode:{0},tailNode:{1},cost:{2}", headNode,tailNode,cost);
         }
     }
 }

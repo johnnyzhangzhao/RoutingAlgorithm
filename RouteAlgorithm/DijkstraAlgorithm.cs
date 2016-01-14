@@ -68,25 +68,20 @@ namespace RouteAlgorithm
             }
         }
 
-        public double CompareCost(ActiveNode n1, ActiveNode n2)
+        public void ShortPathToString()
         {
-            double dist = n1.dist - n2.dist;
-            if (dist < 0)
+            foreach (ActiveNode n1 in ShortNode)
             {
-                return n1.dist;
+                Console.Write("shortNode:{0}", n1.id);
             }
-            return n2.dist;
         }
 
         public double GetShortPath(Node startNode, Node targetNode)
         {
             Dictionary<Node, double> distance = new Dictionary<Node, double>();
-
-
-
-
             visitedNodeMarks = new Dictionary<string, double>();
             double shortestPathCost = 0;
+            Collection<Arc> nodeAdjacentArc;
             int numSettledNodes = 0;
             double distToAdjNode = 0;
             ActiveNode activeNode = new ActiveNode(startNode.Id, 0);
@@ -96,7 +91,7 @@ namespace RouteAlgorithm
             while (pq.Count() != 0)
             {
                 ActiveNodes.Add(pq.Dequeue());
-                ActiveNode currentNode = ActiveNodes[activeNodes.Count()];
+                ActiveNode currentNode = ActiveNodes[activeNodes.Count()-1];
                 if (isvisited(currentNode.id))
                 {
                     continue;
@@ -113,9 +108,7 @@ namespace RouteAlgorithm
                     shortestPathCost = 99999999999;
                     break;
                 }
-                Node curNode;
-                curNode = graph.MapNodes[currentNode.id];
-                Collection<Arc> nodeAdjacentArc = graph.AdjacentArcs[curNode];
+                nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
 
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
@@ -147,12 +140,6 @@ namespace RouteAlgorithm
             return false;
         }
 
-        public void ShortPathToString()
-        {
-            foreach (ActiveNode n1 in ShortNode)
-            {
-                Console.Write ("shortNode:{0}",n1.id);
-            }
-        }
+        
     }
 }
