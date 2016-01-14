@@ -6,15 +6,14 @@ namespace RouteAlgorithm
     public class RoadNetwork
     {
         private Bounds bounds;
-        private List<Arc> arcs;
+        private Collection<Arc> arcs;
         private List<Node> nodes;
+        private Dictionary<string, Node> mapNodes;
 
         // Create a adjacent list to store the whole network
-        private Dictionary<Node, Collection<Arc>> adjacentArcs;
+        private Dictionary<string, Collection<Arc>> adjacentArcs;
 
-        public RoadNetwork()
-        {
-        }
+        public RoadNetwork() { }
 
         public Bounds Bounds
         {
@@ -28,13 +27,13 @@ namespace RouteAlgorithm
             }
         }
 
-        public List<Arc> Arcs
+        public Collection<Arc> Arcs
         {
             get
             {
                 if (arcs == null)
                 {
-                    arcs = new List<Arc>();
+                    arcs = new Collection<Arc>();
                 }
                 return arcs;
             }
@@ -52,15 +51,27 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<Node, Collection<Arc>> AdjacentArcs
+        public Dictionary<string, Collection<Arc>> AdjacentArcs
         {
             get 
             {
                 if (adjacentArcs == null)
                 {
-                    adjacentArcs = new Dictionary<Node, Collection<Arc>>();
+                    adjacentArcs = new Dictionary<string, Collection<Arc>>();
                 }
                 return adjacentArcs; 
+            }
+        }
+
+        public Dictionary<string, Node> MapNodes
+        {
+            get
+            {
+                if (mapNodes == null)
+                {
+                    mapNodes = new Dictionary<string, Node>();
+                }
+                return mapNodes;
             }
         }
     }

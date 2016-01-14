@@ -7,8 +7,11 @@ namespace RouteAlgorithm
 {
     public class ActiveNode
     {
-        private string id;
-        private double dist;
+        public string id;
+        public double dist;
+
+        public ActiveNode() { }
+
         public ActiveNode(string id, double dist)
         {
             this.id = id;

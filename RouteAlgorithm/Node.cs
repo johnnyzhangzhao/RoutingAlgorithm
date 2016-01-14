@@ -6,9 +6,8 @@ namespace RouteAlgorithm
     public class Node
     {
         private string id;
-        private Coordinate coordinate;
+        private Coordinate coordinate;      
         private Dictionary<string, string> tags;
-
         private Collection<Arc> incomingArcs;
         private Collection<Arc> outgoingArcs;
 
@@ -70,10 +69,10 @@ namespace RouteAlgorithm
             }
         }
 
+
         public override string ToString()
         {
-            // Todo:implement it.
-            return "{";
+            return string.Format("id:{0},incomingArcs:{3},outgoingArcs:{4}", id,incomingArcs,outgoingArcs); 
         }
     }
 }
