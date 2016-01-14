@@ -24,7 +24,7 @@ namespace RouteAlgorithm
         public string Id
         {
             get { return id; }
-            private set { id = value; }
+            internal set { id = value; }
         }
 
         public Coordinate Coordinate

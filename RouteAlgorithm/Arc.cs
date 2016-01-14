@@ -5,6 +5,7 @@ namespace RouteAlgorithm
 {
     public class Arc
     {
+        private string id;
         private float cost;
         private Node tailNode;
         private Node headNode;
@@ -20,9 +21,23 @@ namespace RouteAlgorithm
         {
         }
 
-        public Arc( Node headNode, Node tailNode, float cost)
+        public Arc(Node headNode, Node tailNode, float cost)
+            :this(string.Empty,headNode,tailNode,cost)
         {
+        }
+
+        public Arc(string id, Node headNode, Node tailNode, float cost)
+        {
+            this.id = id;
             this.Cost = cost;
+            this.HeadNode = headNode;
+            this.TailNode = tailNode;
+        }
+
+        public string Id
+        {
+            get { return id; }
+            internal set { id = value; }
         }
 
         public float Cost
