@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using ThinkGeo.MapSuite.Core;
+using System.Linq;
 
 namespace Test
 {
@@ -53,60 +54,22 @@ namespace Test
                 // Get the lineshape of the processing feature.
                 foreach (LineShape processingLineShape in processingLineShapes)
                 {
-                    CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[0]);
+                    Node startNode = CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[0]);
+                    if (!roadNetwork.Nodes.Any(node => node.Id == startNode.Id))
+                    {
+                        roadNetwork.Nodes.Add(startNode);
+                    }
 
-
-                    Vertex endVertex = processingLineShape.Vertices[processingLineShape.Vertices.Count - 1];
-
+                    Node endNode = CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
+                    if (!roadNetwork.Nodes.Any(node => node.Id == endNode.Id))
+                    {
+                        roadNetwork.Nodes.Add(endNode);
+                    }
                 }
             }
             featureSource.Close();
 
-
             return roadNetwork;
-        }
-
-        private void CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
-        {
-            // Create node based on vertex.
-            // Todo: check if it has been existed.
-            Collection<Feature> adjacentTailNodeFeatures = GetAdjacentFeaturesOfVertex(featureSource, vertex);
-            Node tailNode = InitializeNodeFromVeterx(vertex, adjacentTailNodeFeatures);
-            roadNetwork.Nodes.Add(tailNode);
-
-            // Loop and see if the queried shape is intersected with processing shape.
-            foreach (Feature adjacentTailNodeFeature in adjacentTailNodeFeatures)
-            {
-                // Given the adjacent line is line shape, and create adjacent list without un-direction consideration.
-                LineShape adjacentLineShape = GeometryHelper.GetLineShapes(adjacentTailNodeFeature)[0];
-                adjacentLineShape.Id = adjacentTailNodeFeature.Id;
-
-
-                // Check if it's start vertext or end vertex of the adjacent line shape.
-                int vertexIndex = 0;
-                if (GeometryHelper.IsSamePoint(vertex, adjacentLineShape.Vertices[adjacentLineShape.Vertices.Count - 1], tolerance))
-                {
-                    vertexIndex = adjacentLineShape.Vertices.Count - 1;
-                }
-
-                // Todo: check if it has been existed.
-                Collection<Feature> adjacentHeadNodeFeatures = GetAdjacentFeaturesOfVertex(featureSource, adjacentLineShape.Vertices[vertexIndex]);
-                Node headNode = InitializeNodeFromVeterx(adjacentLineShape.Vertices[vertexIndex], adjacentHeadNodeFeatures);
-                roadNetwork.Nodes.Add(headNode);
-
-                Arc adjacentArc = new Arc(adjacentTailNodeFeature.Id, headNode, tailNode, CalculateRoadCost(adjacentLineShape));
-
-                // Check if the direction is the allowed of current segment?
-                RoadDirection roadDirection = CalculateRoadDirection(adjacentTailNodeFeature, adjacentLineShape, vertex);
-                if (roadDirection == RoadDirection.Forward)
-                {
-                    tailNode.OutgoingArcs.Add(adjacentArc);
-                }
-                else if (roadDirection == RoadDirection.Backward)
-                {
-                    tailNode.IncomingArcs.Add(adjacentArc);
-                }
-            }
         }
 
         public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
@@ -180,6 +143,51 @@ namespace Test
 
             featureSourceForRead.Close();
             featureSourceForSave.Close();
+        }
+
+        private Node CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
+        {
+            // Create node based on vertex.
+            // Todo: check if it has been existed.
+            Collection<Feature> adjacentTailNodeFeatures = GetAdjacentFeaturesOfVertex(featureSource, vertex);
+            Node tailNode = InitializeNodeFromVeterx(vertex, adjacentTailNodeFeatures);
+            roadNetwork.Nodes.Add(tailNode);
+
+            // Loop and see if the queried shape is intersected with processing shape.
+            foreach (Feature adjacentTailNodeFeature in adjacentTailNodeFeatures)
+            {
+                // Given the adjacent line is line shape, and create adjacent list without un-direction consideration.
+                LineShape adjacentLineShape = GeometryHelper.GetLineShapes(adjacentTailNodeFeature)[0];
+                adjacentLineShape.Id = adjacentTailNodeFeature.Id;
+
+
+                // Check if it's start vertext or end vertex of the adjacent line shape.
+                int vertexIndex = 0;
+                if (GeometryHelper.IsSamePoint(vertex, adjacentLineShape.Vertices[adjacentLineShape.Vertices.Count - 1], tolerance))
+                {
+                    vertexIndex = adjacentLineShape.Vertices.Count - 1;
+                }
+
+                // Todo: check if it has been existed.
+                Collection<Feature> adjacentHeadNodeFeatures = GetAdjacentFeaturesOfVertex(featureSource, adjacentLineShape.Vertices[vertexIndex]);
+                Node headNode = InitializeNodeFromVeterx(adjacentLineShape.Vertices[vertexIndex], adjacentHeadNodeFeatures);
+                roadNetwork.Nodes.Add(headNode);
+
+                Arc adjacentArc = new Arc(adjacentTailNodeFeature.Id, headNode, tailNode, CalculateRoadCost(adjacentLineShape));
+
+                // Check if the direction is the allowed of current segment?
+                RoadDirection roadDirection = CalculateRoadDirection(adjacentTailNodeFeature, adjacentLineShape, vertex);
+                if (roadDirection == RoadDirection.Forward)
+                {
+                    tailNode.OutgoingArcs.Add(adjacentArc);
+                }
+                else if (roadDirection == RoadDirection.Backward)
+                {
+                    tailNode.IncomingArcs.Add(adjacentArc);
+                }
+            }
+
+            return tailNode;
         }
 
         private RoadDirection CalculateRoadDirection(Feature feature, LineShape lineShape, Vertex startVertex)
