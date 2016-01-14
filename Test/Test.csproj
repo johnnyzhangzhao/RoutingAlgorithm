@@ -61,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeometryHelper.cs" />
+    <Compile Include="IndexAdjacentNode.cs" />
+    <Compile Include="NetworkIndexNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamSource.cs" />

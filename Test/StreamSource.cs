@@ -41,6 +41,11 @@ namespace Test
             set { onewayColumn = value; }
         }
 
+        public virtual void CreateIndex(RoadNetwork roadNetwork)
+        { 
+            
+        }
+
         public virtual RoadNetwork CreateNetwork(FeatureSource featureSource)
         {
             RoadNetwork roadNetwork = new RoadNetwork();
