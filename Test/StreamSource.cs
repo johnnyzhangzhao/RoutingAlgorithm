@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using ThinkGeo.MapSuite.Core;
 using System.Linq;
+using ThinkGeo.MapSuite.Core;
 
 namespace Test
 {
