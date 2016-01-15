@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using ThinkGeo.MapSuite.Core;
 
-namespace Test
+namespace RouteAlgorithm
 {
     public class StreamSource
     {

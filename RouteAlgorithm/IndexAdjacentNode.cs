@@ -1,5 +1,5 @@
 ﻿
-namespace Test
+namespace RouteAlgorithm
 {
     internal class IndexAdjacentNode
     {

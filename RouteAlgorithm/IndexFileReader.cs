@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Test
+namespace RouteAlgorithm
 {
     internal class IndexFileReader
     {

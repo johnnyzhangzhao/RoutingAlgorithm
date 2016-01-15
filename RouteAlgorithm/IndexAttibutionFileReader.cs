@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RouteAlgorithm
 {
-    class IndexAttibutionFileReader
+    internal class IndexAttibutionFileReader
     {
     }
 }

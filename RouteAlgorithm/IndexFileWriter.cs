@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Test
+namespace RouteAlgorithm
 {
     internal class IndexFileWriter
     {
@@ -25,6 +25,7 @@ namespace Test
         public void Open(int recordCount)
         {
             indexFileStream = File.Open(indexFileName, FileMode.Open, FileAccess.ReadWrite);
+            indexFileStreamWriter = new StreamWriter(indexFileStream);
             indexFileStreamWriter.Write(StreamSource.VERSION);
             indexFileStreamWriter.BaseStream.Seek(recordCount * 8, SeekOrigin.Current); // preserve for record offset.
         }

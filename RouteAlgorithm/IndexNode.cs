@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Test
+namespace RouteAlgorithm
 {
     internal class IndexNode
     {
