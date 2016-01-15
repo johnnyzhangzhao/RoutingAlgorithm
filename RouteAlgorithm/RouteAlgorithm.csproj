@@ -59,6 +59,8 @@
     <Compile Include="DijkstraAlgorithm.cs" />
     <Compile Include="GeometryHelper.cs" />
     <Compile Include="IndexAdjacentNode.cs" />
+    <Compile Include="IndexAttibutionFileReader.cs" />
+    <Compile Include="IndexAttributionFileWriter.cs" />
     <Compile Include="IndexFileReader.cs" />
     <Compile Include="IndexFileWriter.cs" />
     <Compile Include="IndexNode.cs" />
