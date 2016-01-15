@@ -31,6 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSScriptLibrary">
+      <HintPath>..\Dependency\CSScriptLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="GeoAPI">
+      <HintPath>..\Dependency\GeoAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="MapSuiteCore">
+      <HintPath>..\Dependency\MapSuiteCore.dll</HintPath>
+    </Reference>
+    <Reference Include="NetTopologySuite">
+      <HintPath>..\Dependency\NetTopologySuite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,11 +57,18 @@
     <Compile Include="Bounds.cs" />
     <Compile Include="Coordinate.cs" />
     <Compile Include="DijkstraAlgorithm.cs" />
+    <Compile Include="GeometryHelper.cs" />
+    <Compile Include="IndexAdjacentNode.cs" />
+    <Compile Include="IndexFileReader.cs" />
+    <Compile Include="IndexFileWriter.cs" />
+    <Compile Include="IndexNode.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="ReadingCache.cs" />
     <Compile Include="RoadDirection.cs" />
     <Compile Include="RoadNetwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoadSpeed.cs" />
+    <Compile Include="StreamSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

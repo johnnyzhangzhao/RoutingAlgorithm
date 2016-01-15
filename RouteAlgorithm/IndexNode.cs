@@ -2,12 +2,12 @@
 
 namespace Test
 {
-    internal class NetworkIndexNode
+    internal class IndexNode
     {
         private int id;
         private Collection<IndexAdjacentNode> adjacentNodes;
 
-        public NetworkIndexNode(int id)
+        public IndexNode(int id)
         {
             this.Id = id;
         }
