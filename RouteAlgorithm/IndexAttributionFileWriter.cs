@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -36,29 +37,42 @@ namespace RouteAlgorithm
         {
             indexOffsets.Add(indexNode.Id, attributionFileStreamWriter.BaseStream.Position);
 
-            //attributionFileStreamWriter.Write(indexNode.AdjacentNodes.Count);
-            //foreach (IndexAdjacentNode adjacentNode in indexNode.AdjacentNodes)
-            //{
-            //    attributionFileStreamWriter.Write(adjacentNode.Id);
-            //    attributionFileStreamWriter.Write(adjacentNode.Cost);
-            //}
+            attributionFileStreamWriter.Write(indexNode.AdjacentNodes.Count);
+
+            Collection<int> recordOffsets = new Collection<int>();
+
+            int currentOffset = indexNode.AdjacentNodes.Count * 8;
+            int currentFeatureIdLength = 0;
+            foreach (IndexAdjacentNode adjacentNode in indexNode.AdjacentNodes)
+            {
+                attributionFileStreamWriter.Write(adjacentNode.Id);
+                attributionFileStreamWriter.Write(currentOffset + currentFeatureIdLength);
+
+                currentFeatureIdLength += adjacentNode.FeatureId.Length;
+            }
+
+            foreach (IndexAdjacentNode adjacentNode in indexNode.AdjacentNodes)
+            {
+                //attributionFileStreamWriter.Write(adjacentNode.FeatureId.Length);
+                attributionFileStreamWriter.Write(adjacentNode.FeatureId);
+            }
         }
 
         public void Close()
         {
-            //// Update the Count and write the offset, and then close the stream.
-            //indexFileStreamWriter.BaseStream.Seek(4, SeekOrigin.Begin);
+            // Update the Count and write the offset, and then close the stream.
+            attributionFileStreamWriter.BaseStream.Seek(4, SeekOrigin.Begin);
 
-            //foreach (var indexOffset in indexOffsets)
-            //{
-            //    indexFileStreamWriter.Write(indexOffset.Value);
-            //}
+            foreach (var indexOffset in indexOffsets)
+            {
+                attributionFileStreamWriter.Write(indexOffset.Value);
+            }
 
-            //indexFileStream.Close();
-            //indexFileStream.Dispose();
+            attributionFileStream.Close();
+            attributionFileStream.Dispose();
 
-            //indexFileStreamWriter.Close();
-            //indexFileStreamWriter.Dispose();
+            attributionFileStreamWriter.Close();
+            attributionFileStreamWriter.Dispose();
         }
     }
 }

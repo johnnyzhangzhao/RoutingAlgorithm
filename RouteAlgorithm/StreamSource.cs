@@ -78,17 +78,6 @@ namespace RouteAlgorithm
             return roadNetwork;
         }
 
-        public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
-        {
-            // Todo: check one-way roads is right to the specific direction.
-            return true;
-        }
-
-        public virtual float CalculateRoadCost(LineShape lineShape)
-        {
-            return (float)lineShape.GetLength(DataUnit, DistanceUnit);
-        }
-
         public virtual void ImportData(FeatureSource featureSourceForRead, FeatureSource featureSourceForSave)
         {
             featureSourceForRead.Open();
@@ -149,6 +138,17 @@ namespace RouteAlgorithm
 
             featureSourceForRead.Close();
             featureSourceForSave.Close();
+        }
+
+        public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
+        {
+            // Todo: check one-way roads is right to the specific direction.
+            return true;
+        }
+
+        public virtual float CalculateRoadCost(LineShape lineShape)
+        {
+            return (float)lineShape.GetLength(DataUnit, DistanceUnit);
         }
 
         private Node CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
