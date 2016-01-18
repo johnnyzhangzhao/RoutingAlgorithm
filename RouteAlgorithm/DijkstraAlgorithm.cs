@@ -122,13 +122,17 @@ namespace RouteAlgorithm
                         
                         distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
                         activeNode = new ActiveNode(arc.HeadNode.Id, distToAdjNode);
-                        if (minCost==0)
+                        if (minCost == 0)
                         {
                             minCost = activeNode.dist;
                             pq.Enqueue(activeNode);
                         }
-                    }
-                    
+                        else if (minCost > activeNode.dist)
+                        {
+                            minCost = activeNode.dist;
+                            pq.Enqueue(activeNode);
+                        }
+                    }                    
                 }
             }
             return shortestPathCost;
