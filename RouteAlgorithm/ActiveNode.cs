@@ -8,14 +8,27 @@ namespace RouteAlgorithm
     public class ActiveNode
     {
         public string id;
-        public double dist;
+        private double dist;
 
         public ActiveNode() { }
 
         public ActiveNode(string id, double dist)
         {
             this.id = id;
-            this.dist = dist;
+            this.Dist = dist;
+        }
+
+        public double Dist
+        {
+            get
+            {
+                return dist;
+            }
+
+            set
+            {
+                dist = value;
+            }
         }
     }
 }
