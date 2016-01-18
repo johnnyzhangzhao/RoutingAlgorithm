@@ -5,6 +5,7 @@ namespace RouteAlgorithm
     {
         private int id;
         private float cost;
+        private string featureId;
 
         private IndexAdjacentNode()
         { }
@@ -30,6 +31,12 @@ namespace RouteAlgorithm
         {
             get { return cost; }
             set { cost = value; }
+        }
+
+        public string FeatureId
+        {
+            get { return featureId; }
+            set { featureId = value; }
         }
     }
 }
