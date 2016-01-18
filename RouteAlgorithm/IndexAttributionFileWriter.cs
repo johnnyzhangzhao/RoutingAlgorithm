@@ -12,6 +12,8 @@ namespace RouteAlgorithm
         private Stream attributionFileStream;
         private StreamWriter attributionFileStreamWriter;
 
+        private Dictionary<int, long> indexOffsets;
+
         public IndexAttributionFileWriter(string attributionFileName)
         {
             this.attributionFileName = attributionFileName;
@@ -30,15 +32,15 @@ namespace RouteAlgorithm
             attributionFileStreamWriter.BaseStream.Seek(recordCount * 8, SeekOrigin.Current); // preserve for record offset.
         }
 
-        public void WriteIndexNode(IndexAdjacentNode adjacentNode)
+        public void WriteIndexNode(IndexNode indexNode)
         {
-            //indexOffsets.Add(adjacentNode.Id, indexFileStreamWriter.BaseStream.Position);
+            indexOffsets.Add(indexNode.Id, attributionFileStreamWriter.BaseStream.Position);
 
-            //indexFileStreamWriter.Write(adjacentNode.AdjacentNodes.Count);
-            //foreach (IndexAdjacentNode adjacentNode in adjacentNode.AdjacentNodes)
+            //attributionFileStreamWriter.Write(indexNode.AdjacentNodes.Count);
+            //foreach (IndexAdjacentNode adjacentNode in indexNode.AdjacentNodes)
             //{
-            //    indexFileStreamWriter.Write(adjacentNode.Id);
-            //    indexFileStreamWriter.Write(adjacentNode.Cost);  
+            //    attributionFileStreamWriter.Write(adjacentNode.Id);
+            //    attributionFileStreamWriter.Write(adjacentNode.Cost);
             //}
         }
 
