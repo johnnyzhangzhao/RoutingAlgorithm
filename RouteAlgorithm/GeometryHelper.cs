@@ -43,9 +43,37 @@ namespace RouteAlgorithm
             return orderedPoints;
         }
 
-        internal static bool IsIntermediatePoint(Vertex startVetex, Vertex endVertex, PointShape intermeidatePoint)
+        internal static bool IsIntermediatePoint(Vertex startVertex, Vertex endVertex, PointShape intermeidatePoint)
         {
-            return true;
+            bool isIntermediatePoint = false;
+
+            if (endVertex.X == startVertex.X)
+            {
+                if (intermeidatePoint.X == startVertex.X)
+                {
+                    if ((intermeidatePoint.Y >= startVertex.Y && intermeidatePoint.Y <= endVertex.Y)
+                        || (intermeidatePoint.Y >= endVertex.Y && intermeidatePoint.Y <= startVertex.Y))
+                    {
+                        isIntermediatePoint = true;
+                    }
+                }
+            }
+            else
+            {
+                double segmentRatio = (endVertex.Y - startVertex.Y) / (endVertex.X - startVertex.X);
+                double intermeidateRatio = (intermeidatePoint.Y - startVertex.Y) / (intermeidatePoint.X - startVertex.X);
+
+                if (segmentRatio == intermeidateRatio)
+                {
+                    if ((intermeidatePoint.X >= startVertex.X && intermeidatePoint.X <= endVertex.X)
+                        || (intermeidatePoint.X >= endVertex.X && intermeidatePoint.Y <= startVertex.X))
+                    {
+                        isIntermediatePoint = true;
+                    }
+                }
+            }
+
+            return isIntermediatePoint;
         }
 
         internal static double GetEvaluatedDistance(Vertex point1, PointShape point2)
