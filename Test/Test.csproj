@@ -65,11 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Data\roads.dbf" />
-    <None Include="Data\roads.ids" />
-    <None Include="Data\roads.idx" />
-    <None Include="Data\roads.shp" />
-    <None Include="Data\roads.shx" />
+    <None Include="Data\malta_roads.dbf" />
+    <None Include="Data\malta_roads.ids" />
+    <None Include="Data\malta_roads.idx" />
+    <None Include="Data\malta_roads.shp" />
+    <None Include="Data\malta_roads.shx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RouteAlgorithm\RouteAlgorithm.csproj">

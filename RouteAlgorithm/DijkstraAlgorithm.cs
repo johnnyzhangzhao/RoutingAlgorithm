@@ -76,7 +76,7 @@ namespace RouteAlgorithm
             }
         }
 
-        public double GetShortPath(Node startNode, Node targetNode)
+        public double GetShortPath(string startNodeId, string targetNodeId)
         {
             Dictionary<Node, double> distance = new Dictionary<Node, double>();
             visitedNodeMarks = new Dictionary<string, double>();
@@ -84,10 +84,11 @@ namespace RouteAlgorithm
             Collection<Arc> nodeAdjacentArc;
             int numSettledNodes = 0;
             double distToAdjNode = 0;
-            ActiveNode activeNode = new ActiveNode(startNode.Id, 0);
-            Queue<ActiveNode> pq = new Queue<ActiveNode>(1);
-            pq.Enqueue(activeNode);
-
+            ActiveNode startNode;
+            ActiveNode activeNode;
+            startNode = new ActiveNode(startNodeId,0);
+            Queue<ActiveNode> pq = new Queue<ActiveNode>();
+            pq.Enqueue(startNode);
             while (pq.Count() != 0)
             {
                 ActiveNodes.Add(pq.Dequeue());
@@ -98,34 +99,36 @@ namespace RouteAlgorithm
                 }
                 visitedNodeMarks.Add(currentNode.id, currentNode.dist);
                 numSettledNodes++;
-                if (currentNode.id == targetNode.Id)
+                if (currentNode.id == targetNodeId)
                 {
                     shortestPathCost = currentNode.dist;
                     break;
                 }
                 if (numSettledNodes > graph.Nodes.Count())
                 {
-                    shortestPathCost = 99999999999;
+                    Console.WriteLine("There is no short path between startNode and targetNode");
                     break;
                 }
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
-
+                double minCost=0 ;
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
                     Arc arc;
                     arc = nodeAdjacentArc[i];
-                    double minCost = 0;
-                    minCost = activeNode.dist;
+                    
+                    //minCost = activeNode.dist;
                     if (!isvisited(arc.HeadNode.Id))
                     {
+                        
                         distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
-                        shortNode.Enqueue(currentNode);
                         activeNode = new ActiveNode(arc.HeadNode.Id, distToAdjNode);
+                        if (minCost==0)
+                        {
+                            minCost = activeNode.dist;
+                            pq.Enqueue(activeNode);
+                        }
                     }
-                    if (activeNode.dist < minCost)
-                    {
-                        pq.Enqueue(activeNode);
-                    }
+                    
                 }
             }
             return shortestPathCost;
