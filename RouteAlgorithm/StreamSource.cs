@@ -95,7 +95,7 @@ namespace RouteAlgorithm
             featureSourceForSave.Open();
 
             long featureCount = featureSourceForRead.GetCount();
-            Collection<Feature> features = featureSourceForRead.GetAllFeatures(ReturningColumnsType.NoColumns);
+            Collection<Feature> features = featureSourceForRead.GetAllFeatures(ReturningColumnsType.AllColumns);
             foreach (Feature feature in features)
             {
                 Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
@@ -134,20 +134,20 @@ namespace RouteAlgorithm
                     }
 
                     // Order the crossing points following the sequence of line vertex.
-                    Dictionary<Vertex, bool> vertecesOfNewLine = GeometryHelper.AddCrossingPointToLine(processingLineShape, crossingPoints);
+                    Collection<FlagedVertex> vertecesOfNewLine = GeometryHelper.AddCrossingPointToLine(processingLineShape, crossingPoints);
 
                     // Split current processing lineshape into segments.
                     featureSourceForSave.BeginTransaction();
                     Collection<Vertex> verteces = new Collection<Vertex>();
                     foreach (var vertex in vertecesOfNewLine)
                     {
-                        verteces.Add(vertex.Key);
-                        if (vertex.Value)
+                        verteces.Add(vertex.Vertex);
+                        if (vertex.Flag)
                         {
                             if (verteces.Count >= 2)
                             {
                                 LineShape segment = new LineShape(verteces);
-                                featureSourceForSave.AddFeature(new Feature(segment));
+                                featureSourceForSave.AddFeature(new Feature(segment, feature.ColumnValues));
 
                                 verteces.RemoveAt(0);
                             }
