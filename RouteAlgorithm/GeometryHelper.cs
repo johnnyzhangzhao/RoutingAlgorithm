@@ -8,77 +8,141 @@ namespace RouteAlgorithm
 {
     internal class GeometryHelper
     {
-        internal static Dictionary<Vertex, bool> AddCrossingPointToLine(LineShape line, Collection<PointShape> crossingPoints)
+        internal static Collection<FlagedVertex> AddCrossingPointToLine(LineShape line, Collection<PointShape> crossingPoints)
         {
-            Dictionary<Vertex, bool> orderedPoints = new Dictionary<Vertex, bool>();
+            Collection<FlagedVertex> orderedPoints = new Collection<FlagedVertex>();
             for (int i = 0; i < line.Vertices.Count - 1; i++)
             {
-                Dictionary<double, PointShape> pointsOnSegement = new Dictionary<double, PointShape>();
+                // Add the first vertex of segment.
+                if (!HasExists(orderedPoints, line.Vertices[i]))
+                {
+                    orderedPoints.Add(new FlagedVertex() { Vertex = line.Vertices[i] , Flag = true});
+                }
+
+                Dictionary<PointShape, double> pointsOnSegement = new Dictionary<PointShape, double>();
                 foreach (PointShape crossingPoint in crossingPoints)
                 {
-                    // Add the first vertex of segment.
-                    orderedPoints.Add(line.Vertices[i], true);
-
                     // Add the crossing point if it's on the segment.
                     bool isIntermiate = IsIntermediatePoint(line.Vertices[i], line.Vertices[i + 1], crossingPoint);
                     if (isIntermiate)
                     {
                         double pointDistance = GetEvaluatedDistance(line.Vertices[i], crossingPoint);
-                        pointsOnSegement.Add(pointDistance, crossingPoint);
+                        pointsOnSegement.Add(crossingPoint, pointDistance);
                     }
                 }
 
                 if (pointsOnSegement.Count > 0)
                 {
-                    pointsOnSegement.OrderBy(v => v.Key);
+                    pointsOnSegement.OrderBy(v => v.Value);
                     foreach (var pointOnSegment in pointsOnSegement)
                     {
-                        orderedPoints.Add(new Vertex(pointOnSegment.Value.X, pointOnSegment.Value.Y), false);
-                        crossingPoints.Remove(pointOnSegment.Value);
+                        Vertex vertex = new Vertex(pointOnSegment.Key.X, pointOnSegment.Key.Y);
+                        if (!HasExists(orderedPoints, vertex))
+                        {
+                            bool isOnTheLine = false;
+                            foreach (var item in line.Vertices)
+                            {
+                                if(vertex.X == item.X && vertex.Y == item.Y)
+                                {
+                                    isOnTheLine = true;
+                                    break;
+                                }
+                            }
+
+                            if(isOnTheLine)
+                            {
+                                orderedPoints.Add(new FlagedVertex() { Vertex = vertex, Flag = true });
+                            }
+                            else
+                            { 
+                                orderedPoints.Add(new FlagedVertex() { Vertex = vertex, Flag = false });
+                            }
+                        }
+                        crossingPoints.Remove(pointOnSegment.Key);
                     }
                 }
             }
-            orderedPoints.Add(line.Vertices[line.Vertices.Count - 1], true);
+
+            if(line.Vertices.Count > orderedPoints.Count)
+            {
+                bool isLoop = false;
+                foreach (var item in orderedPoints)
+                {
+                    if (line.Vertices[line.Vertices.Count - 1].X == item.Vertex.X && line.Vertices[line.Vertices.Count - 1].Y == item.Vertex.Y)
+                    {
+                        isLoop = true;
+                        break;
+                    }
+                }
+
+                if(isLoop)
+                {
+                    orderedPoints.Add(new FlagedVertex() { Vertex = new Vertex(line.Vertices[line.Vertices.Count - 1].X, line.Vertices[line.Vertices.Count - 1].Y), Flag = true });
+                }
+            }
 
             return orderedPoints;
+        }
+
+        private static bool HasExists(Collection<FlagedVertex> flagVertices, Vertex vertex )
+        {
+            bool hasExists = false;
+
+            foreach (var item in flagVertices)
+            {
+                if(item.Vertex.X == vertex.X && item.Vertex.Y == vertex.Y)
+                {
+                    hasExists = true;
+                    break;
+                }
+            }
+
+            return hasExists;
         }
 
         internal static bool IsIntermediatePoint(Vertex startVertex, Vertex endVertex, PointShape intermeidatePoint)
         {
             bool isIntermediatePoint = false;
 
-            if (endVertex.X == startVertex.X)
+            if ((startVertex.X == intermeidatePoint.X && startVertex.Y == intermeidatePoint.Y)
+                || (endVertex.X == intermeidatePoint.X && endVertex.Y == intermeidatePoint.Y))
             {
-                if (intermeidatePoint.X == startVertex.X)
-                {
-                    if ((intermeidatePoint.Y >= startVertex.Y && intermeidatePoint.Y <= endVertex.Y)
-                        || (intermeidatePoint.Y >= endVertex.Y && intermeidatePoint.Y <= startVertex.Y))
-                    {
-                        isIntermediatePoint = true;
-                    }
-                }
+                isIntermediatePoint = true;
             }
             else
             {
-                double segmentRatio = (endVertex.Y - startVertex.Y) / (endVertex.X - startVertex.X);
-                double intermeidateRatio = (intermeidatePoint.Y - startVertex.Y) / (intermeidatePoint.X - startVertex.X);
-
-                if (segmentRatio == intermeidateRatio)
+                if (endVertex.X == startVertex.X)
                 {
-                    if ((intermeidatePoint.X >= startVertex.X && intermeidatePoint.X <= endVertex.X)
-                        || (intermeidatePoint.X >= endVertex.X && intermeidatePoint.Y <= startVertex.X))
+                    if (intermeidatePoint.X == startVertex.X)
                     {
-                        isIntermediatePoint = true;
+                        if ((intermeidatePoint.Y >= startVertex.Y && intermeidatePoint.Y <= endVertex.Y)
+                            || (intermeidatePoint.Y >= endVertex.Y && intermeidatePoint.Y <= startVertex.Y))
+                        {
+                            isIntermediatePoint = true;
+                        }
+                    }
+                }
+                else
+                {
+                    double segmentRatio = (endVertex.Y - startVertex.Y) / (endVertex.X - startVertex.X);
+                    double intermeidateRatio = (intermeidatePoint.Y - startVertex.Y) / (intermeidatePoint.X - startVertex.X);
+
+                    if (segmentRatio == intermeidateRatio)
+                    {
+                        if ((intermeidatePoint.X >= startVertex.X && intermeidatePoint.X <= endVertex.X)
+                            || (intermeidatePoint.X >= endVertex.X && intermeidatePoint.Y <= startVertex.X))
+                        {
+                            isIntermediatePoint = true;
+                        }
                     }
                 }
             }
-
             return isIntermediatePoint;
         }
 
         internal static double GetEvaluatedDistance(Vertex point1, PointShape point2)
         {
-            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
+            return DecimalDegreesHelper.GetDistanceFromDecimalDegrees(new PointShape(point1), point2, DistanceUnit.Meter);
         }
 
         internal static bool IsCrossingPoint(Vertex vertex, Collection<PointShape> points, double tolerance)
