@@ -44,8 +44,8 @@ namespace RouteAlgorithm
         }
 
         public virtual void CreateIndex(RoadNetwork roadNetwork)
-        { 
-            
+        {
+
         }
 
         public virtual RoadNetwork CreateNetwork(FeatureSource featureSource)
@@ -78,6 +78,17 @@ namespace RouteAlgorithm
             return roadNetwork;
         }
 
+        public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
+        {
+            // Todo: check one-way roads is right to the specific direction.
+            return true;
+        }
+
+        public virtual float CalculateRoadCost(LineShape lineShape)
+        {
+            return (float)lineShape.GetLength(DataUnit, DistanceUnit);
+        }
+
         public virtual void ImportData(FeatureSource featureSourceForRead, FeatureSource featureSourceForSave)
         {
             featureSourceForRead.Open();
@@ -93,10 +104,10 @@ namespace RouteAlgorithm
                 {
                     // Define a variable to save the points where the adjacent lines intersect with current processing line.
                     Collection<PointShape> crossingPoints = new Collection<PointShape>();
-                    
+
                     // Get all the lines in current processing shape bounds.
                     Collection<Feature> adjacentFeatures = featureSourceForRead.GetFeaturesInsideBoundingBox(processingLineShape.GetBoundingBox(), ReturningColumnsType.NoColumns);
-                    
+
                     // Loop and see if the queried shape is intersected with processing shape.
                     foreach (Feature adjacentFeature in adjacentFeatures)
                     {
@@ -106,7 +117,19 @@ namespace RouteAlgorithm
                         // The queried shape is intersected with processing shape.
                         foreach (PointShape point in tempCrossingPoints.Points)
                         {
-                            crossingPoints.Add(point);
+                            bool hasAdded = false;
+                            foreach (var item in crossingPoints)
+                            {
+                                if (point.X == item.X && point.Y == item.Y)
+                                {
+                                    hasAdded = true;
+                                    break;
+                                }
+                            }
+                            if (!hasAdded)
+                            {
+                                crossingPoints.Add(point);
+                            }
                         }
                     }
 
@@ -126,7 +149,7 @@ namespace RouteAlgorithm
                                 LineShape segment = new LineShape(verteces);
                                 featureSourceForSave.AddFeature(new Feature(segment));
 
-                                verteces.Clear();
+                                verteces.RemoveAt(0);
                             }
                         }
                     }
@@ -138,17 +161,6 @@ namespace RouteAlgorithm
 
             featureSourceForRead.Close();
             featureSourceForSave.Close();
-        }
-
-        public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
-        {
-            // Todo: check one-way roads is right to the specific direction.
-            return true;
-        }
-
-        public virtual float CalculateRoadCost(LineShape lineShape)
-        {
-            return (float)lineShape.GetLength(DataUnit, DistanceUnit);
         }
 
         private Node CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
