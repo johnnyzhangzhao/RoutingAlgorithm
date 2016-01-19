@@ -12,7 +12,7 @@ namespace RouteAlgorithm
         private Node startNode;
         private Node targetNode;
         private Dictionary<string, double> visitedNodeMarks;
-        private Collection<ActiveNode> activeNodes;
+        private List<ActiveNode> activeNodes;
         private Queue<ActiveNode> shortNode;
 
         public DijkstraAlgorithm() { }
@@ -44,13 +44,13 @@ namespace RouteAlgorithm
             }
         }
 
-        public Collection<ActiveNode> ActiveNodes
+        public List<ActiveNode> ActiveNodes
         {
             get
             {
                 if (activeNodes == null)
                 {
-                    activeNodes = new Collection<ActiveNode>();
+                    activeNodes = new List<ActiveNode>();
                 }
                 return activeNodes;
             }
@@ -68,24 +68,6 @@ namespace RouteAlgorithm
             }
         }
 
-        public ActiveNode CostCompare(ActiveNode n1, ActiveNode n2)
-        {
-            double dist = (n1.Dist) - (n2.Dist);
-            if (dist < 0)
-            {
-                return n1;
-            }
-            else
-            {
-                return n2;
-            }
-        }
-
-        //public ActiveNode getShortNode()
-        //{
-        //    ActiveNode minNode
-        //}
-
         public double GetShortPath(string startNodeId, string targetNodeId)
         {
             Dictionary<Node, double> distance = new Dictionary<Node, double>();
@@ -96,22 +78,26 @@ namespace RouteAlgorithm
             double distToAdjNode = 0;
             ActiveNode startNode;
             ActiveNode activeNode;
-            ActiveNode midNode;
-            double minCost;
+            ActiveNode currentNode;
             startNode = new ActiveNode(startNodeId,0);
-            //currentNode = startNode;
+            activeNodes = new List<ActiveNode>();
+            activeNodes.Add(startNode);
             
             
             while (activeNodes.Count() != 0)
             {
-                
-                //midNode = pq.Dequeue();
-                //activeNodes.Add(midNode);
-                Console.WriteLine(activeNodes.Count());
-               // activeNodes.Add(pq.Dequeue());
-                ActiveNode currentNode = activeNodes[activeNodes.Count() - 1];
 
+                activeNodes.Sort(new ActiveNodeCompare());
+
+                for (int i = 0; i < activeNodes.Count(); i++)
+                {
+                    Console.WriteLine("pai xu hou "+activeNodes[i].id);
+                }
+
+                currentNode = activeNodes[0];
+                activeNodes.Clear();
                 Console.WriteLine("From Node: " + startNodeId + " to Node " + targetNodeId);
+                Console.WriteLine("****************current node is "+currentNode.id+"***********");
                 if (isvisited(currentNode.id))
                 {
                     continue;
@@ -132,9 +118,7 @@ namespace RouteAlgorithm
                     break;
                 }
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
-
                 
-                minCost= currentNode.Dist + nodeAdjacentArc[0].Cost;
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
                     
@@ -142,17 +126,16 @@ namespace RouteAlgorithm
                     arc = nodeAdjacentArc[i];
                     
                     //minCost = activeNode.dist;
-                    if (!isvisited(arc.HeadNode.Id))
+                    if (!isvisited(arc.TailNode.Id))
                     { 
                         distToAdjNode = currentNode.Dist + nodeAdjacentArc[i].Cost;
-                        distToAdjNode = 22222;
-                        Console.WriteLine(distToAdjNode);
-                        activeNode = new ActiveNode(arc.HeadNode.Id, distToAdjNode);
-                        if (activeNode.Dist-minCost<0)
-                        {
-                            minCost = activeNode.Dist;
-                            currentNode = activeNode;
-                        }
+                        Console.WriteLine("distToAdjNode is " + distToAdjNode);
+                        activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode);
+
+                        Console.WriteLine("activeNode is "+activeNode.id);
+
+                        activeNodes.Add(activeNode);
+                        Console.WriteLine(activeNodes.Count());
                     }
                 }
                
