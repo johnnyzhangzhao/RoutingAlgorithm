@@ -68,13 +68,23 @@ namespace RouteAlgorithm
             }
         }
 
-        public void ShortPathToString()
+        public ActiveNode CostCompare(ActiveNode n1, ActiveNode n2)
         {
-            foreach (ActiveNode n1 in ShortNode)
+            double dist = (n1.Dist) - (n2.Dist);
+            if (dist < 0)
             {
-                Console.Write("shortNode:{0}", n1.id);
+                return n1;
+            }
+            else
+            {
+                return n2;
             }
         }
+
+        //public ActiveNode getShortNode()
+        //{
+        //    ActiveNode minNode
+        //}
 
         public double GetShortPath(string startNodeId, string targetNodeId)
         {
@@ -86,22 +96,34 @@ namespace RouteAlgorithm
             double distToAdjNode = 0;
             ActiveNode startNode;
             ActiveNode activeNode;
+            ActiveNode midNode;
+            double minCost;
             startNode = new ActiveNode(startNodeId,0);
-            Queue<ActiveNode> pq = new Queue<ActiveNode>();
-            pq.Enqueue(startNode);
-            while (pq.Count() != 0)
+            //currentNode = startNode;
+            
+            
+            while (activeNodes.Count() != 0)
             {
-                ActiveNodes.Add(pq.Dequeue());
-                ActiveNode currentNode = ActiveNodes[activeNodes.Count()-1];
+                
+                //midNode = pq.Dequeue();
+                //activeNodes.Add(midNode);
+                Console.WriteLine(activeNodes.Count());
+               // activeNodes.Add(pq.Dequeue());
+                ActiveNode currentNode = activeNodes[activeNodes.Count() - 1];
+
+                Console.WriteLine("From Node: " + startNodeId + " to Node " + targetNodeId);
                 if (isvisited(currentNode.id))
                 {
                     continue;
                 }
-                visitedNodeMarks.Add(currentNode.id, currentNode.dist);
+                visitedNodeMarks.Add(currentNode.id, currentNode.Dist);
                 numSettledNodes++;
+
+                Console.WriteLine(numSettledNodes);
+
                 if (currentNode.id == targetNodeId)
                 {
-                    shortestPathCost = currentNode.dist;
+                    shortestPathCost = currentNode.Dist;
                     break;
                 }
                 if (numSettledNodes > graph.Nodes.Count())
@@ -110,30 +132,30 @@ namespace RouteAlgorithm
                     break;
                 }
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
-                double minCost=0 ;
+
+                
+                minCost= currentNode.Dist + nodeAdjacentArc[0].Cost;
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
+                    
                     Arc arc;
                     arc = nodeAdjacentArc[i];
                     
                     //minCost = activeNode.dist;
                     if (!isvisited(arc.HeadNode.Id))
-                    {
-                        
-                        distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
+                    { 
+                        distToAdjNode = currentNode.Dist + nodeAdjacentArc[i].Cost;
+                        distToAdjNode = 22222;
+                        Console.WriteLine(distToAdjNode);
                         activeNode = new ActiveNode(arc.HeadNode.Id, distToAdjNode);
-                        if (minCost == 0)
+                        if (activeNode.Dist-minCost<0)
                         {
-                            minCost = activeNode.dist;
-                            pq.Enqueue(activeNode);
+                            minCost = activeNode.Dist;
+                            currentNode = activeNode;
                         }
-                        else if (minCost > activeNode.dist)
-                        {
-                            minCost = activeNode.dist;
-                            pq.Enqueue(activeNode);
-                        }
-                    }                    
+                    }
                 }
+               
             }
             return shortestPathCost;
         }
@@ -147,6 +169,14 @@ namespace RouteAlgorithm
             return false;
         }
 
-        
+        public void ShortPathToString()
+        {
+            foreach (ActiveNode n1 in ShortNode)
+            {
+                Console.Write("shortNode:{0}", n1.id);
+            }
+        }
+
+
     }
 }
