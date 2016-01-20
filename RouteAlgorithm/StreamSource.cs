@@ -55,8 +55,11 @@ namespace RouteAlgorithm
             featureSource.Open();
             QTreeSpatialIndex qtree = new QTreeSpatialIndex(featureSource.GetBoundingBox());
 
-            RoadNetwork roadNetwork = new RoadNetwork();
+#if DEBUG
+            long featureCount = featureSource.GetCount();
+#endif
 
+            RoadNetwork roadNetwork = new RoadNetwork();
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
             foreach (Feature feature in features)
             {
@@ -67,6 +70,11 @@ namespace RouteAlgorithm
                     BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
                     BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
                 }
+
+#if DEBUG
+                Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+#endif
+
             }
             featureSource.Close();
 
@@ -99,8 +107,9 @@ namespace RouteAlgorithm
         {
             featureSourceForRead.Open();
             featureSourceForSave.Open();
-
+#if DEBUG
             long featureCount = featureSourceForRead.GetCount();
+#endif
             Collection<Feature> features = featureSourceForRead.GetAllFeatures(ReturningColumnsType.AllColumns);
             foreach (Feature feature in features)
             {
@@ -162,7 +171,9 @@ namespace RouteAlgorithm
                     featureSourceForSave.CommitTransaction();
                 }
 
+#if DEBUG
                 Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+#endif
             }
 
             featureSourceForRead.Close();
