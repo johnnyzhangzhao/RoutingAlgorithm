@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveNode.cs" />
+    <Compile Include="ActiveNodeCompare.cs" />
     <Compile Include="Arc.cs" />
     <Compile Include="Bounds.cs" />
     <Compile Include="Coordinate.cs" />
@@ -69,7 +70,6 @@
     <Compile Include="IndexFileWriter.cs" />
     <Compile Include="IndexNode.cs" />
     <Compile Include="Node.cs" />
-    <Compile Include="PriorityQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ReadingCache.cs" />
     <Compile Include="RoadDirection.cs" />

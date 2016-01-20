@@ -72,7 +72,7 @@ namespace RouteAlgorithm
 
         public override string ToString()
         {
-            return string.Format("id:{0},incomingArcs:{3},outgoingArcs:{4}", id,incomingArcs,outgoingArcs); 
+            return string.Format("id:{0}", id); 
         }
     }
 }
