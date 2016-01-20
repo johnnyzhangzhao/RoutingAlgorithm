@@ -18,26 +18,40 @@ namespace RouteAlgorithm
             Node n4 = new Node("4", 0, 0);
             Node n5 = new Node("5", 0, 0);
             Node n6 = new Node("6", 0, 0);
+            Node n7 = new Node("7", 0, 0);
+            Node n8 = new Node("8", 0, 0);
+            Node n9 = new Node("9", 0, 0);
 
-            Arc arc12 = new Arc(n1, n2, 7);
-            Arc arc13 = new Arc(n1, n3, 9);
-            Arc arc16 = new Arc(n1, n6, 14);
-            Arc arc23 = new Arc(n2, n3, 10);
-            Arc arc24 = new Arc(n2, n4, 15);
-            Arc arc34 = new Arc(n3, n4, 11);
-            Arc arc36 = new Arc(n3, n6, 2);
-            Arc arc45 = new Arc(n4, n5, 6);
-            Arc arc65 = new Arc(n6, n5, 9);
+            Arc arc12 = new Arc(n1, n2, 2);
+            Arc arc16 = new Arc(n1, n6, 1);
 
-            Arc arc21 = new Arc(n2, n1, 7);
-            Arc arc31 = new Arc(n3, n1, 9);
-            Arc arc61 = new Arc(n6, n1, 14);
-            Arc arc32 = new Arc(n3, n2, 10);
-            Arc arc42 = new Arc(n4, n2, 15);
-            Arc arc43 = new Arc(n4, n3, 11);
-            Arc arc63 = new Arc(n6, n3, 2);
-            Arc arc54 = new Arc(n5, n4, 6);
-            Arc arc56 = new Arc(n6, n5, 9);
+            Arc arc21 = new Arc(n2, n1, 2);
+            Arc arc23 = new Arc(n2, n3, 2);
+
+            Arc arc32 = new Arc(n3, n2, 2);
+            Arc arc34 = new Arc(n3, n4, 2);
+
+            Arc arc43 = new Arc(n4, n3, 2);
+            Arc arc45 = new Arc(n4, n5, 2);
+
+            Arc arc54 = new Arc(n5, n4, 2);
+            Arc arc57 = new Arc(n5, n7, 10);
+            Arc arc58 = new Arc(n5, n8, 10);
+            Arc arc59 = new Arc(n5, n9, 10);
+
+            Arc arc61 = new Arc(n6, n1, 1);
+            Arc arc67 = new Arc(n6, n7, 1);
+            Arc arc68 = new Arc(n6, n8, 1);
+            Arc arc69 = new Arc(n6, n9, 1);
+
+            Arc arc76 = new Arc(n7, n6, 1);
+            Arc arc75 = new Arc(n7, n5, 10);
+
+            Arc arc86 = new Arc(n8, n6, 1);
+            Arc arc85 = new Arc(n8, n5, 10);
+
+            Arc arc96 = new Arc(n9, n6, 1);
+            Arc arc95 = new Arc(n9, n5, 10);
 
             rn.Nodes.Add(n1);
             rn.Nodes.Add(n2);
@@ -45,48 +59,69 @@ namespace RouteAlgorithm
             rn.Nodes.Add(n4);
             rn.Nodes.Add(n5);
             rn.Nodes.Add(n6);
-            rn.MapNodes.Add("1", n1);
+            rn.Nodes.Add(n7);
+            rn.Nodes.Add(n8);
+            rn.Nodes.Add(n9);
+
+            rn.MapNodes.Add("1",n1);
             rn.MapNodes.Add("2", n2);
-            rn.Arcs.Add(arc12);
-            rn.Arcs.Add(arc13);
-            rn.Arcs.Add(arc16);
-            rn.AdjacentArcs.Add(n1.Id, rn.Arcs);
+            rn.MapNodes.Add("3", n3);
+            rn.MapNodes.Add("4", n4);
+            rn.MapNodes.Add("5", n5);
+            rn.MapNodes.Add("6", n6);
+            rn.MapNodes.Add("7", n7);
+            rn.MapNodes.Add("8", n8);
+            rn.MapNodes.Add("9", n9);
 
-            
             Collection<Arc> aa = new Collection<Arc>();
-            aa.Add(arc21);
-            aa.Add(arc23);
-            aa.Add(arc24);
-            rn.AdjacentArcs.Add(n2.Id,aa);
-
+            aa.Add(arc12);
+            aa.Add(arc16);
+            rn.AdjacentArcs.Add(n1.Id, aa);
             Collection<Arc> bb = new Collection<Arc>();
-            bb.Add(arc31);
-            bb.Add(arc32);
-            bb.Add(arc34);
-            bb.Add(arc36);
-            rn.AdjacentArcs.Add(n3.Id, bb);
+            bb.Add(arc21);
+            bb.Add(arc23);
+            rn.AdjacentArcs.Add(n2.Id, bb);
 
             Collection<Arc> cc = new Collection<Arc>();
-            cc.Add(arc42);
-            cc.Add(arc43);
-            cc.Add(arc45);
-            rn.AdjacentArcs.Add(n4.Id, cc);
+            cc.Add(arc32);
+            cc.Add(arc34);
+            rn.AdjacentArcs.Add(n3.Id, cc);
 
             Collection<Arc> dd = new Collection<Arc>();
-            dd.Add(arc63);
-            dd.Add(arc65);
-            dd.Add(arc61);
-            rn.AdjacentArcs.Add(n6.Id, dd);
-
+            dd.Add(arc43);
+            dd.Add(arc45);
+            rn.AdjacentArcs.Add(n4.Id, dd);
             Collection<Arc> ee = new Collection<Arc>();
-            ee.Add(arc56);
+            ee.Add(arc57);
             ee.Add(arc54);
+            ee.Add(arc58);
+            ee.Add(arc59);
             rn.AdjacentArcs.Add(n5.Id, ee);
 
-            DijkstraAlgorithm dij = new DijkstraAlgorithm(rn );
+            Collection<Arc> ff = new Collection<Arc>();
+            ff.Add(arc67);
+            ff.Add(arc68);
+            ff.Add(arc61);
+            ff.Add(arc69);
+            rn.AdjacentArcs.Add(n6.Id, ff);
+            Collection<Arc> gg = new Collection<Arc>();
+            gg.Add(arc75);
+            gg.Add(arc76);
+            rn.AdjacentArcs.Add(n7.Id, gg);
+            Collection<Arc> hh = new Collection<Arc>();
+            hh.Add(arc85);
+            hh.Add(arc86);
+            rn.AdjacentArcs.Add(n8.Id, hh);
+            Collection<Arc> tt = new Collection<Arc>();
+            tt.Add(arc95);
+            tt.Add(arc96);
+            rn.AdjacentArcs.Add(n9.Id, tt);
+
+            DijkstraAlgorithm dij = new DijkstraAlgorithm(rn);
             double cost = dij.GetShortPath("1", "5");
-            dij.ShortPathToString();
-            Console.WriteLine("min cost:"+cost);
+            Console.WriteLine("cost is:" + cost);
+            dij.ShortPathToString("1", "5");
+
             Console.ReadLine();
         }
     }

@@ -13,7 +13,7 @@ namespace RouteAlgorithm
         private Node targetNode;
         private Dictionary<string, double> visitedNodeMarks;
         private List<ActiveNode> activeNodes;
-        private Dictionary<string,double> disToNode;
+        private Dictionary<string,string> parents;
 
         public DijkstraAlgorithm() { }
 
@@ -56,21 +56,20 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<string, double> DisToNode
+        public Dictionary<string, string> DisToNode
         {
             get
             {
-                if (disToNode == null)
+                if (parents == null)
                 {
-                    disToNode = new Dictionary<string, double>();
+                    parents = new Dictionary<string, string>();
                 }
-                return disToNode;
+                return parents;
             }
         }
 
         public double GetShortPath(string startNodeId, string targetNodeId)
         {
-            Dictionary<Node, double> distance = new Dictionary<Node, double>();
             visitedNodeMarks = new Dictionary<string, double>();
             double shortestPathCost = 0;
             Collection<Arc> nodeAdjacentArc;
@@ -79,31 +78,40 @@ namespace RouteAlgorithm
             ActiveNode startNode;
             ActiveNode activeNode;
             ActiveNode currentNode;
-            startNode = new ActiveNode(startNodeId,0);
+            startNode = new ActiveNode(startNodeId,0,"-1");
             activeNodes = new List<ActiveNode>();
-            disToNode = new Dictionary<string, double>();
+            parents = new Dictionary<string, string>();
             activeNodes.Add(startNode);
-            disToNode.Add(startNode.id,0);
             
             
             while (activeNodes.Count() != 0)
             {
+                Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                 activeNodes.Sort(new ActiveNodeCompare());
-                currentNode = activeNodes[0];
-                if (!disToNode.ContainsKey(currentNode.id))
+
+                for (int i = 0; i < activeNodes.Count(); i++)
                 {
-                    disToNode.Add(currentNode.id, currentNode.Dist);
+                    Console.WriteLine("pai xu hou"+activeNodes[i].id+","+activeNodes[i].dist);
                 }
+
+                currentNode = activeNodes[0];
+                Console.WriteLine("***currentnode is"+currentNode.id+"***");
+
                 activeNodes.RemoveAt(0);
                 if (isvisited(currentNode.id))
                 {
                     continue;
                 }
-                visitedNodeMarks.Add(currentNode.id, currentNode.Dist);
+                visitedNodeMarks.Add(currentNode.id, currentNode.dist);
+                parents.Add(currentNode.id, currentNode.parent);
+                //if (!parents.ContainsKey(currentNode.id))
+                //{
+                //    parents.Add(currentNode.id, currentNode.parent);
+                //}
                 numSettledNodes++;
                 if (currentNode.id == targetNodeId)
                 {
-                    shortestPathCost = currentNode.Dist;
+                    shortestPathCost = currentNode.dist;
                     break;
                 }
                 if (numSettledNodes > graph.Nodes.Count())
@@ -112,25 +120,33 @@ namespace RouteAlgorithm
                     break;
                 }
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
+                //Console.WriteLine("nodeAdjacentArc.Count is " + nodeAdjacentArc.Count());
                 
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
                     
                     Arc arc;
                     arc = nodeAdjacentArc[i];
+                    //Console.WriteLine("arc's node is"+arc.HeadNode.Id+","+arc.TailNode.Id);
                     if (!isvisited(arc.TailNode.Id))
                     { 
                         
-                        distToAdjNode = currentNode.Dist + nodeAdjacentArc[i].Cost;
-                        activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode);
-                        for (int j = 0; j < activeNodes.Count(); j++)
+                        distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
+                        activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode,currentNode.id);
+                        
+
+                        Console.WriteLine("activenode is "+activeNode.id);
+                        activeNodes.Add(activeNode);
+                    }
+                }
+                for (int j = 0; j < activeNodes.Count(); j++)
+                {
+                    for (int i = activeNodes.Count() - 1; i > j; i--)
+                    {
+                        if (activeNodes[i].id == activeNodes[j].id && activeNodes[i].dist < activeNodes[j].dist)
                         {
-                            if (activeNode.id == activeNodes[j].id && activeNode.Dist > activeNodes[j].Dist)
-                            {
-                                DisToNode.Remove(currentNode.id);
-                            }
+                            activeNodes.RemoveAt(j);
                         }
-                        activeNodes.Add(activeNode);  
                     }
                 }
             }
@@ -146,12 +162,31 @@ namespace RouteAlgorithm
             return false;
         }
 
-        public void ShortPathToString()
+        public void ShortPathToString(string startNodeId,string targetNodeId)
         {
-            foreach (string t in disToNode.Keys)
+            string sourceNodeId = null;
+            string path = "";
+            Node currentNode = new Node ();
+            string currentNodeId = "";
+            currentNode = graph.MapNodes[targetNodeId];
+            currentNodeId = targetNodeId;
+            path = path + currentNode.Id + "->";
+            foreach (string t in parents.Keys)
             {
-                Console.WriteLine("short path is:" + t + "," + disToNode[t]);
+                Console.WriteLine("short path is:" + t + "," + parents[t]);
             }
+
+
+            
+            while (currentNode.Id != sourceNodeId)
+            {
+
+                Console.WriteLine("\\\\\\" + currentNode.Id);
+                currentNodeId = parents[currentNodeId];
+                currentNode = graph.MapNodes[currentNodeId];
+                path = path + currentNode.Id + "->";
+            }
+            Console.WriteLine(path);
         }
 
 
