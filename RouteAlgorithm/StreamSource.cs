@@ -86,7 +86,7 @@ namespace RouteAlgorithm
             // Todo: check one-way roads is right to the specific direction.
             bool isRoadDirectionAccessable = false;
             string onewayValue = feature.ColumnValues["oneway"];
-            if(String.Compare(onewayValue.Trim(), "1", true, CultureInfo.InvariantCulture) == 0)
+            if (String.Compare(onewayValue.Trim(), "1", true, CultureInfo.InvariantCulture) == 0)
             {
                 isRoadDirectionAccessable = true;
             }
@@ -187,10 +187,7 @@ namespace RouteAlgorithm
             if (idsInside.Count <= 0)
             {
                 Node startNode = CreateNode(featureSource, roadNetwork, vertex);
-                if (!roadNetwork.Nodes.Any(node => node.Id == startNode.Id))
-                {
-                    roadNetwork.Nodes.Add(startNode);
-                }
+                roadNetwork.Nodes.Add(startNode);
 
                 qtree.Add(new PointShape(vertex));
             }
@@ -279,13 +276,13 @@ namespace RouteAlgorithm
 
         private Node InitializeNodeFromVeterx(Vertex vertex, Collection<Feature> adjacentFeatures)
         {
-            List<string> ids = new List<string>();
-            foreach (var feature in adjacentFeatures)
-            {
-                ids.Add(feature.Id);
-            }
-            ids.Sort((x, y) => string.Compare(x, y));
-            string id = string.Join("_", ids.ToArray());
+            //List<string> ids = new List<string>();
+            //foreach (var feature in adjacentFeatures)
+            //{
+            //    ids.Add(feature.Id);
+            //}
+            //ids.Sort((x, y) => string.Compare(x, y));
+            string id = adjacentFeatures[0].Id; //string.Join("_", ids.ToArray());
 
             Node node = new Node(id, (float)vertex.Y, (float)vertex.X);
             return node;
