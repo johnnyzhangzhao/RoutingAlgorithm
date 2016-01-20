@@ -71,6 +71,10 @@
     <Compile Include="IndexNode.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Qtree\QTreeHelper.cs" />
+    <Compile Include="Qtree\QTreeSpatialIndex.cs" />
+    <Compile Include="Qtree\QuadCell.cs" />
+    <Compile Include="Qtree\QuadTreeNode.cs" />
     <Compile Include="ReadingCache.cs" />
     <Compile Include="RoadDirection.cs" />
     <Compile Include="RoadNetwork.cs" />

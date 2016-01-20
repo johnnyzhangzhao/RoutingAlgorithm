@@ -1,5 +1,4 @@
-﻿using RouteAlgorithm;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -50,9 +49,11 @@ namespace RouteAlgorithm
 
         public virtual RoadNetwork CreateNetwork(FeatureSource featureSource)
         {
+            featureSource.Open();
+            QTreeSpatialIndex qtree = new QTreeSpatialIndex(featureSource.GetBoundingBox());
+
             RoadNetwork roadNetwork = new RoadNetwork();
 
-            featureSource.Open();
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
             foreach (Feature feature in features)
             {
@@ -60,17 +61,8 @@ namespace RouteAlgorithm
                 // Get the lineshape of the processing feature.
                 foreach (LineShape processingLineShape in processingLineShapes)
                 {
-                    Node startNode = CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[0]);
-                    if (!roadNetwork.Nodes.Any(node => node.Id == startNode.Id))
-                    {
-                        roadNetwork.Nodes.Add(startNode);
-                    }
-
-                    Node endNode = CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
-                    if (!roadNetwork.Nodes.Any(node => node.Id == endNode.Id))
-                    {
-                        roadNetwork.Nodes.Add(endNode);
-                    }
+                    BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
+                    BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
                 }
             }
             featureSource.Close();
@@ -161,6 +153,22 @@ namespace RouteAlgorithm
 
             featureSourceForRead.Close();
             featureSourceForSave.Close();
+        }
+
+        private void BuildNetworkNode(FeatureSource featureSource, QTreeSpatialIndex qtree, RoadNetwork roadNetwork, Vertex vertex)
+        {
+            RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(vertex, tolerance);
+            Collection<string> idsInside = qtree.GetFeatureIdsIntersectingBoundingBox(startSmallBounds);
+            if (idsInside.Count <= 0)
+            {
+                Node startNode = CreateNode(featureSource, roadNetwork, vertex);
+                if (!roadNetwork.Nodes.Any(node => node.Id == startNode.Id))
+                {
+                    roadNetwork.Nodes.Add(startNode);
+                }
+
+                qtree.Add(new PointShape(vertex));
+            }
         }
 
         private Node CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
