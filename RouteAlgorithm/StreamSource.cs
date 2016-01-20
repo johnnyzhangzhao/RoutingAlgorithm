@@ -58,34 +58,6 @@ namespace RouteAlgorithm
             RoadNetwork roadNetwork = new RoadNetwork();
 
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
-
-            //Stack<Feature> featureStack = new Stack<Feature>(features);
-            //while (featureStack.Count > 0)
-            //{
-            //    Feature feature = featureStack.Pop();
-            //    if (features.Contains(feature))
-            //    {
-            //        features.Remove(feature);
-            //    }
-            //    else
-            //    {
-            //        continue;
-            //    }
-
-            //    LineShape shape = feature.GetShape() as LineShape;
-            //    Node startNode = new Node(feature.Id, (float)shape.Vertices[0].Y, (float)shape.Vertices[0].X);
-            //    var featureBoundingBox = feature.GetBoundingBox();
-            //    Collection<Feature> containsFeatures = featureSource.GetFeaturesInsideBoundingBox(featureBoundingBox, ReturningColumnsType.AllColumns);
-
-            //    foreach (var item in containsFeatures)
-            //    {
-            //        if (item.Crosses(feature))
-            //        {
-            //            features.Remove(item);
-            //            startNode.IncomingArcs.Add(new Arc())
-            //        }
-            //    }
-            //}
             foreach (Feature feature in features)
             {
                 Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
