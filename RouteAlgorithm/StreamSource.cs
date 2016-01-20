@@ -1,7 +1,7 @@
-﻿using RouteAlgorithm;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using ThinkGeo.MapSuite.Core;
 
@@ -17,6 +17,8 @@ namespace RouteAlgorithm
         public StreamSource()
         {
             tolerance = 1e-6;
+            DataUnit = GeographyUnit.DecimalDegree;
+            DistanceUnit = DistanceUnit.Meter;
         }
 
         public double Tolerance
@@ -50,9 +52,14 @@ namespace RouteAlgorithm
 
         public virtual RoadNetwork CreateNetwork(FeatureSource featureSource)
         {
-            RoadNetwork roadNetwork = new RoadNetwork();
-
             featureSource.Open();
+            QTreeSpatialIndex qtree = new QTreeSpatialIndex(featureSource.GetBoundingBox());
+
+#if DEBUG
+            long featureCount = featureSource.GetCount();
+#endif
+
+            RoadNetwork roadNetwork = new RoadNetwork();
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
             foreach (Feature feature in features)
             {
@@ -60,18 +67,14 @@ namespace RouteAlgorithm
                 // Get the lineshape of the processing feature.
                 foreach (LineShape processingLineShape in processingLineShapes)
                 {
-                    Node startNode = CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[0]);
-                    if (!roadNetwork.Nodes.Any(node => node.Id == startNode.Id))
-                    {
-                        roadNetwork.Nodes.Add(startNode);
-                    }
-
-                    Node endNode = CreateNode(featureSource, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
-                    if (!roadNetwork.Nodes.Any(node => node.Id == endNode.Id))
-                    {
-                        roadNetwork.Nodes.Add(endNode);
-                    }
+                    BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
+                    BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
                 }
+
+#if DEBUG
+                Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+#endif
+
             }
             featureSource.Close();
 
@@ -81,7 +84,18 @@ namespace RouteAlgorithm
         public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
         {
             // Todo: check one-way roads is right to the specific direction.
-            return true;
+            bool isRoadDirectionAccessable = false;
+            string onewayValue = feature.ColumnValues["oneway"];
+            if (String.Compare(onewayValue.Trim(), "1", true, CultureInfo.InvariantCulture) == 0)
+            {
+                isRoadDirectionAccessable = true;
+            }
+            else
+            {
+                isRoadDirectionAccessable = false;
+            }
+
+            return isRoadDirectionAccessable;
         }
 
         public virtual float CalculateRoadCost(LineShape lineShape)
@@ -93,8 +107,9 @@ namespace RouteAlgorithm
         {
             featureSourceForRead.Open();
             featureSourceForSave.Open();
-
+#if DEBUG
             long featureCount = featureSourceForRead.GetCount();
+#endif
             Collection<Feature> features = featureSourceForRead.GetAllFeatures(ReturningColumnsType.AllColumns);
             foreach (Feature feature in features)
             {
@@ -156,11 +171,26 @@ namespace RouteAlgorithm
                     featureSourceForSave.CommitTransaction();
                 }
 
+#if DEBUG
                 Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+#endif
             }
 
             featureSourceForRead.Close();
             featureSourceForSave.Close();
+        }
+
+        private void BuildNetworkNode(FeatureSource featureSource, QTreeSpatialIndex qtree, RoadNetwork roadNetwork, Vertex vertex)
+        {
+            RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(vertex, tolerance);
+            Collection<string> idsInside = qtree.GetFeatureIdsIntersectingBoundingBox(startSmallBounds);
+            if (idsInside.Count <= 0)
+            {
+                Node startNode = CreateNode(featureSource, roadNetwork, vertex);
+                roadNetwork.Nodes.Add(startNode);
+
+                qtree.Add(new PointShape(vertex));
+            }
         }
 
         private Node CreateNode(FeatureSource featureSource, RoadNetwork roadNetwork, Vertex vertex)
@@ -239,20 +269,20 @@ namespace RouteAlgorithm
         {
             RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(vertex, tolerance);
             // Get all the lines in current processing shape bounds.
-            Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(startSmallBounds, ReturningColumnsType.NoColumns);
+            Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(startSmallBounds, ReturningColumnsType.AllColumns);
 
             return adjacentFeatures;
         }
 
         private Node InitializeNodeFromVeterx(Vertex vertex, Collection<Feature> adjacentFeatures)
         {
-            List<string> ids = new List<string>();
-            foreach (var feature in adjacentFeatures)
-            {
-                ids.Add(feature.Id);
-            }
-            ids.Sort((x, y) => string.Compare(x, y));
-            string id = string.Join("_", ids.ToArray());
+            //List<string> ids = new List<string>();
+            //foreach (var feature in adjacentFeatures)
+            //{
+            //    ids.Add(feature.Id);
+            //}
+            //ids.Sort((x, y) => string.Compare(x, y));
+            string id = adjacentFeatures[0].Id; //string.Join("_", ids.ToArray());
 
             Node node = new Node(id, (float)vertex.Y, (float)vertex.X);
             return node;
