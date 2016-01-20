@@ -85,6 +85,7 @@ namespace RouteAlgorithm
 
             DijkstraAlgorithm dij = new DijkstraAlgorithm(rn );
             double cost = dij.GetShortPath("1", "5");
+            dij.ShortPathToString();
             Console.WriteLine("min cost:"+cost);
             Console.ReadLine();
         }

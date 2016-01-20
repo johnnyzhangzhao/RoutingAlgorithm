@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using ThinkGeo.MapSuite.Core;
 
@@ -16,6 +17,8 @@ namespace RouteAlgorithm
         public StreamSource()
         {
             tolerance = 1e-6;
+            DataUnit = GeographyUnit.DecimalDegree;
+            DistanceUnit = DistanceUnit.Meter;
         }
 
         public double Tolerance
@@ -55,6 +58,34 @@ namespace RouteAlgorithm
             RoadNetwork roadNetwork = new RoadNetwork();
 
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
+
+            //Stack<Feature> featureStack = new Stack<Feature>(features);
+            //while (featureStack.Count > 0)
+            //{
+            //    Feature feature = featureStack.Pop();
+            //    if (features.Contains(feature))
+            //    {
+            //        features.Remove(feature);
+            //    }
+            //    else
+            //    {
+            //        continue;
+            //    }
+
+            //    LineShape shape = feature.GetShape() as LineShape;
+            //    Node startNode = new Node(feature.Id, (float)shape.Vertices[0].Y, (float)shape.Vertices[0].X);
+            //    var featureBoundingBox = feature.GetBoundingBox();
+            //    Collection<Feature> containsFeatures = featureSource.GetFeaturesInsideBoundingBox(featureBoundingBox, ReturningColumnsType.AllColumns);
+
+            //    foreach (var item in containsFeatures)
+            //    {
+            //        if (item.Crosses(feature))
+            //        {
+            //            features.Remove(item);
+            //            startNode.IncomingArcs.Add(new Arc())
+            //        }
+            //    }
+            //}
             foreach (Feature feature in features)
             {
                 Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
@@ -73,7 +104,18 @@ namespace RouteAlgorithm
         public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
         {
             // Todo: check one-way roads is right to the specific direction.
-            return true;
+            bool isRoadDirectionAccessable = false;
+            string onewayValue = feature.ColumnValues["oneway"];
+            if(String.Compare(onewayValue.Trim(), "1", true, CultureInfo.InvariantCulture) == 0)
+            {
+                isRoadDirectionAccessable = true;
+            }
+            else
+            {
+                isRoadDirectionAccessable = false;
+            }
+
+            return isRoadDirectionAccessable;
         }
 
         public virtual float CalculateRoadCost(LineShape lineShape)
@@ -247,7 +289,7 @@ namespace RouteAlgorithm
         {
             RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(vertex, tolerance);
             // Get all the lines in current processing shape bounds.
-            Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(startSmallBounds, ReturningColumnsType.NoColumns);
+            Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(startSmallBounds, ReturningColumnsType.AllColumns);
 
             return adjacentFeatures;
         }
