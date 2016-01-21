@@ -70,6 +70,7 @@
     <Compile Include="IndexFileReader.cs" />
     <Compile Include="IndexFileWriter.cs" />
     <Compile Include="IndexNode.cs" />
+    <Compile Include="LandmarkAlgorithm.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Qtree\QTreeHelper.cs" />
