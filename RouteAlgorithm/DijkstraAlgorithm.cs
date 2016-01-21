@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace RouteAlgorithm
 {
     public class DijkstraAlgorithm
     {
         private RoadNetwork graph;
-        private Node startNode;
-        private Node targetNode;
         private Dictionary<string, double> visitedNodeMarks;
         private List<ActiveNode> activeNodes;
         private Dictionary<string,string> parents;
@@ -20,16 +17,6 @@ namespace RouteAlgorithm
         public DijkstraAlgorithm(RoadNetwork graph)
         {
             this.graph = graph;
-        }
-
-        public Node StartNode
-        {
-            set { startNode = value; }
-        }
-
-        public Node TargetNode
-        {
-            set { targetNode = value; }
         }
 
         public Dictionary<string, double> VisitedNodeMarks
@@ -56,7 +43,7 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<string, string> DisToNode
+        public Dictionary<string, string> Parents
         {
             get
             {
@@ -78,7 +65,7 @@ namespace RouteAlgorithm
             ActiveNode startNode;
             ActiveNode activeNode;
             ActiveNode currentNode;
-            startNode = new ActiveNode(startNodeId,0,"0");
+            startNode = new ActiveNode(startNodeId,0,"-1");
             activeNodes = new List<ActiveNode>();
             parents = new Dictionary<string, string>();
             activeNodes.Add(startNode);
@@ -109,8 +96,7 @@ namespace RouteAlgorithm
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
-                    Arc arc;
-                    arc = nodeAdjacentArc[i];
+                    Arc arc = nodeAdjacentArc[i];
                     if (!isvisited(arc.TailNode.Id))
                     { 
                         distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
