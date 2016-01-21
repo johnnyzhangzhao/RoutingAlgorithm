@@ -40,8 +40,9 @@
     <Reference Include="GeoAPI">
       <HintPath>..\Dependency\GeoAPI.dll</HintPath>
     </Reference>
-    <Reference Include="MapSuiteCore">
-      <HintPath>..\Dependency\MapSuiteCore.dll</HintPath>
+    <Reference Include="MapSuiteCore, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\casperlee.APTHINKGEO\Downloads\DesktopEditionFull9.0.205.0DllPackage\Managed Assemblies\MapSuiteCore.dll</HintPath>
     </Reference>
     <Reference Include="NetTopologySuite">
       <HintPath>..\Dependency\NetTopologySuite.dll</HintPath>
