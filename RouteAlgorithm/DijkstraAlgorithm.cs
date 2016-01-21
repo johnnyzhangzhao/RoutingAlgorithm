@@ -78,7 +78,7 @@ namespace RouteAlgorithm
             ActiveNode startNode;
             ActiveNode activeNode;
             ActiveNode currentNode;
-            startNode = new ActiveNode(startNodeId,0,"-1");
+            startNode = new ActiveNode(startNodeId,0,"0");
             activeNodes = new List<ActiveNode>();
             parents = new Dictionary<string, string>();
             activeNodes.Add(startNode);
@@ -91,7 +91,7 @@ namespace RouteAlgorithm
 
                 for (int i = 0; i < activeNodes.Count(); i++)
                 {
-                    Console.WriteLine("pai xu hou"+activeNodes[i].id+","+activeNodes[i].dist);
+                    Console.WriteLine("pai xu hou"+activeNodes[i].id+","+activeNodes[i].dist + "," + activeNodes[i].parent);
                 }
 
                 currentNode = activeNodes[0];
@@ -164,27 +164,18 @@ namespace RouteAlgorithm
 
         public void ShortPathToString(string startNodeId,string targetNodeId)
         {
-            string sourceNodeId = null;
             string path = "";
             Node currentNode = new Node ();
             string currentNodeId = "";
             currentNode = graph.MapNodes[targetNodeId];
             currentNodeId = targetNodeId;
-            path = path + currentNode.Id + "->";
-            foreach (string t in parents.Keys)
+            path = path + currentNode.Id + "->";          
+            while (currentNodeId != startNodeId)
             {
-                Console.WriteLine("short path is:" + t + "," + parents[t]);
-            }
-
-
-            
-            while (currentNode.Id != sourceNodeId)
-            {
-
-                Console.WriteLine("\\\\\\" + currentNode.Id);
                 currentNodeId = parents[currentNodeId];
+                Console.WriteLine("^^^" + currentNodeId);
                 currentNode = graph.MapNodes[currentNodeId];
-                path = path + currentNode.Id + "->";
+                path = currentNode.Id + "->" + path ;
             }
             Console.WriteLine(path);
         }
