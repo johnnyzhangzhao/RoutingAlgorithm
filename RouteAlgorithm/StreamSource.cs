@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using ThinkGeo.MapSuite.Core;
 
 namespace RouteAlgorithm
@@ -13,6 +16,8 @@ namespace RouteAlgorithm
 
         private double tolerance;
         private string onewayColumn;
+
+        private Mutex mutex = new Mutex();
 
         public StreamSource()
         {
@@ -61,22 +66,59 @@ namespace RouteAlgorithm
 
             RoadNetwork roadNetwork = new RoadNetwork();
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
-            foreach (Feature feature in features)
+            featureSource.Close();
+            Collection<Collection<Feature>> groupFeatures = new Collection<Collection<Feature>>();
+            const int threadCount = 8;
+            for (int i = 0; i < threadCount; i++)
             {
-                Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
-                // Get the lineshape of the processing feature.
-                foreach (LineShape processingLineShape in processingLineShapes)
-                {
-                    BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
-                    BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
-                }
+                groupFeatures.Add(new Collection<Feature>());
+            }
+
+            for (int i = 0; i < features.Count; i++)
+            {
+                groupFeatures[i % threadCount].Add(features[i]);
+            }
+            int done = 0;
+            var tasks = (from items in groupFeatures
+                         select Task.Factory.StartNew(() =>
+             {
+                 var clonedFeatureSource = featureSource.CloneDeep();
+                 clonedFeatureSource.Open();
+                 foreach (var feature in items)
+                 {
+                     Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
+                     // Get the lineshape of the processing feature.
+                     foreach (LineShape processingLineShape in processingLineShapes)
+                     {
+                         BuildNetworkNode(clonedFeatureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
+                         BuildNetworkNode(clonedFeatureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
+                     }
+                     done++;
+                     Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, done));
+                 }
+
+             })).ToArray();
+            //foreach (Feature feature in features)
+            //{
+            //    Task.Factory.StartNew(() =>
+            //    {
+            //        Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
+            //        // Get the lineshape of the processing feature.
+            //        foreach (LineShape processingLineShape in processingLineShapes)
+            //        {
+            //            BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
+            //            BuildNetworkNode(featureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
+            //        }
+            //    }
+            //   );
+            Task.WaitAll(tasks);
 
 #if DEBUG
-                Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+
 #endif
 
-            }
-            featureSource.Close();
+            //}
+            //featureSource.Close();
 
             return roadNetwork;
         }
@@ -183,12 +225,14 @@ namespace RouteAlgorithm
         private void BuildNetworkNode(FeatureSource featureSource, QTreeSpatialIndex qtree, RoadNetwork roadNetwork, Vertex vertex)
         {
             RectangleShape startSmallBounds = GeometryHelper.CreateSmallRectangle(vertex, tolerance);
+
+
             Collection<string> idsInside = qtree.GetFeatureIdsIntersectingBoundingBox(startSmallBounds);
+
             if (idsInside.Count <= 0)
             {
                 Node startNode = CreateNode(featureSource, roadNetwork, vertex);
                 roadNetwork.Nodes.Add(startNode);
-
                 qtree.Add(new PointShape(vertex));
             }
         }
@@ -282,9 +326,9 @@ namespace RouteAlgorithm
             //    ids.Add(feature.Id);
             //}
             //ids.Sort((x, y) => string.Compare(x, y));
-            string id = adjacentFeatures[0].Id; //string.Join("_", ids.ToArray());
+            //string id = adjacentFeatures[0].Id; //string.Join("_", ids.ToArray());
 
-            Node node = new Node(id, (float)vertex.Y, (float)vertex.X);
+            Node node = new Node(string.Empty, (float)vertex.Y, (float)vertex.X);
             return node;
         }
     }

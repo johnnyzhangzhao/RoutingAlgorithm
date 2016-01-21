@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using ThinkGeo.MapSuite.Core;
 
 namespace RouteAlgorithm
@@ -8,6 +9,7 @@ namespace RouteAlgorithm
     [Serializable]
     internal class QTreeSpatialIndex : SpatialIndex
     {
+        private static readonly object sync = new object();
         private Dictionary<string, QuadTreeNode> qtree;
         private RectangleShape maxExtent;
         private int maxLevel;
@@ -42,15 +44,19 @@ namespace RouteAlgorithm
             if (!string.IsNullOrEmpty(location))
             {
                 QuadCell cell = QTreeHelper.GetCellByLocation(maxExtent, location);
-
-                if (!qtree.ContainsKey(location))
+                lock (sync)
                 {
-                    QuadTreeNode node = new QuadTreeNode(cell.Location, cell.BoundingBox, feature.Id);
-                    qtree.Add(location, node);
-
-                    if (maxLevel < level)
+                    if (!qtree.ContainsKey(location))
                     {
-                        maxLevel = level;
+                        lock (sync)
+                        {
+                            QuadTreeNode node = new QuadTreeNode(cell.Location, cell.BoundingBox, feature.Id);
+                            qtree.Add(location, node);
+                        }
+                        if (maxLevel < level)
+                        {
+                            maxLevel = level;
+                        }
                     }
                 }
             }
@@ -88,21 +94,25 @@ namespace RouteAlgorithm
 
         private Collection<QuadTreeNode> GetIntersectedCells(RectangleShape boundingBox, int level)
         {
+
             Collection<QuadTreeNode> result = new Collection<QuadTreeNode>();
 
             string queriedBboxLocation = QTreeHelper.GetLocation(maxExtent, boundingBox, level);
-            foreach (string key in qtree.Keys)
+            lock (sync)
             {
-                QuadCell cell = QTreeHelper.GetCellByLocation(maxExtent, key);
-
-                if (key.StartsWith(queriedBboxLocation) && boundingBox.Intersects(cell.BoundingBox))
+                foreach (string key in qtree.Keys)
                 {
-                    result.Add(qtree[key]);
+                    //QuadCell cell = QTreeHelper.GetCellByLocation(maxExtent, key);
+
+                    if (key.StartsWith(queriedBboxLocation) && boundingBox.Intersects(QTreeHelper.GetCellByLocation(maxExtent, key).BoundingBox))
+                    {
+                        result.Add(qtree[key]);
+                    }
                 }
             }
 
             return result;
-        }
+        } 
 
         private Collection<string> GetPossibleNodes(string location)
         {
