@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using ThinkGeo.MapSuite.Core;
 
@@ -17,13 +15,14 @@ namespace RouteAlgorithm
         private double tolerance;
         private string onewayColumn;
 
-        private Mutex mutex = new Mutex();
+        private Queue<Collection<Feature>> queue;
 
         public StreamSource()
         {
             tolerance = 1e-6;
             DataUnit = GeographyUnit.DecimalDegree;
             DistanceUnit = DistanceUnit.Meter;
+            queue = new Queue<Collection<Feature>>();
         }
 
         public double Tolerance
@@ -67,37 +66,27 @@ namespace RouteAlgorithm
             RoadNetwork roadNetwork = new RoadNetwork();
             Collection<Feature> features = featureSource.GetAllFeatures(ReturningColumnsType.NoColumns);
             featureSource.Close();
-            Collection<Collection<Feature>> groupFeatures = new Collection<Collection<Feature>>();
-            const int threadCount = 8;
-            for (int i = 0; i < threadCount; i++)
-            {
-                groupFeatures.Add(new Collection<Feature>());
-            }
-
-            for (int i = 0; i < features.Count; i++)
-            {
-                groupFeatures[i % threadCount].Add(features[i]);
-            }
+            Collection<Collection<Feature>> featureGroups = GroupFeatures(features);
             int done = 0;
-            var tasks = (from items in groupFeatures
+            var tasks = (from items in featureGroups
                          select Task.Factory.StartNew(() =>
-             {
-                 var clonedFeatureSource = featureSource.CloneDeep();
-                 clonedFeatureSource.Open();
-                 foreach (var feature in items)
-                 {
-                     Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
-                     // Get the lineshape of the processing feature.
-                     foreach (LineShape processingLineShape in processingLineShapes)
-                     {
-                         BuildNetworkNode(clonedFeatureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
-                         BuildNetworkNode(clonedFeatureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
-                     }
-                     done++;
-                     Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, done));
-                 }
+                         {
+                             var clonedFeatureSource = featureSource.CloneDeep();
+                             clonedFeatureSource.Open();
+                             foreach (var feature in items)
+                             {
+                                 Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
+                                 // Get the lineshape of the processing feature.
+                                 foreach (LineShape processingLineShape in processingLineShapes)
+                                 {
+                                     BuildNetworkNode(clonedFeatureSource, qtree, roadNetwork, processingLineShape.Vertices[0]);
+                                     BuildNetworkNode(clonedFeatureSource, qtree, roadNetwork, processingLineShape.Vertices[processingLineShape.Vertices.Count - 1]);
+                                 }
+                                 done++;
+                                 Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, done));
+                             }
 
-             })).ToArray();
+                         })).ToArray();
             //foreach (Feature feature in features)
             //{
             //    Task.Factory.StartNew(() =>
@@ -123,6 +112,23 @@ namespace RouteAlgorithm
             return roadNetwork;
         }
 
+        private static Collection<Collection<Feature>> GroupFeatures(Collection<Feature> features)
+        {
+            Collection<Collection<Feature>> featureGroups = new Collection<Collection<Feature>>();
+            const int threadCount = 8;
+            for (int i = 0; i < threadCount; i++)
+            {
+                featureGroups.Add(new Collection<Feature>());
+            }
+
+            for (int i = 0; i < features.Count; i++)
+            {
+                featureGroups[i % threadCount].Add(features[i]);
+            }
+
+            return featureGroups;
+        }
+
         public virtual bool IsRoadDirectionAccessable(Feature feature, RoadDirection roadDirection)
         {
             // Todo: check one-way roads is right to the specific direction.
@@ -145,14 +151,8 @@ namespace RouteAlgorithm
             return (float)lineShape.GetLength(DataUnit, DistanceUnit);
         }
 
-        public virtual void ImportData(FeatureSource featureSourceForRead, FeatureSource featureSourceForSave)
+        private void WriteFeaturesIntoQueue(Collection<Feature> features, FeatureSource featureSource)
         {
-            featureSourceForRead.Open();
-            featureSourceForSave.Open();
-#if DEBUG
-            long featureCount = featureSourceForRead.GetCount();
-#endif
-            Collection<Feature> features = featureSourceForRead.GetAllFeatures(ReturningColumnsType.AllColumns);
             foreach (Feature feature in features)
             {
                 Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
@@ -163,7 +163,7 @@ namespace RouteAlgorithm
                     Collection<PointShape> crossingPoints = new Collection<PointShape>();
 
                     // Get all the lines in current processing shape bounds.
-                    Collection<Feature> adjacentFeatures = featureSourceForRead.GetFeaturesInsideBoundingBox(processingLineShape.GetBoundingBox(), ReturningColumnsType.NoColumns);
+                    Collection<Feature> adjacentFeatures = featureSource.GetFeaturesInsideBoundingBox(processingLineShape.GetBoundingBox(), ReturningColumnsType.NoColumns);
 
                     // Loop and see if the queried shape is intersected with processing shape.
                     foreach (Feature adjacentFeature in adjacentFeatures)
@@ -192,10 +192,8 @@ namespace RouteAlgorithm
 
                     // Order the crossing points following the sequence of line vertex.
                     Collection<FlagedVertex> vertecesOfNewLine = GeometryHelper.AddCrossingPointToLine(processingLineShape, crossingPoints);
-
-                    // Split current processing lineshape into segments.
-                    featureSourceForSave.BeginTransaction();
                     Collection<Vertex> verteces = new Collection<Vertex>();
+                    Collection<Feature> lineFeatures = new Collection<Feature>();
                     foreach (var vertex in vertecesOfNewLine)
                     {
                         verteces.Add(vertex.Vertex);
@@ -204,20 +202,129 @@ namespace RouteAlgorithm
                             if (verteces.Count >= 2)
                             {
                                 LineShape segment = new LineShape(verteces);
-                                featureSourceForSave.AddFeature(new Feature(segment, feature.ColumnValues));
-
+                                lineFeatures.Add(new Feature(segment, feature.ColumnValues));
                                 verteces.RemoveAt(0);
                             }
                         }
                     }
-                    featureSourceForSave.CommitTransaction();
+                    if (lineFeatures.Count > 0)
+                    {
+                        queue.Enqueue(lineFeatures);
+                    }
                 }
 
 #if DEBUG
-                Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+                Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, features.Count));
 #endif
             }
+        }
 
+        private void SaveFeatures(Collection<Feature> features, FeatureSource featureSource)
+        {
+            featureSource.BeginTransaction();
+            foreach (var feature in features)
+            {
+                featureSource.AddFeature(feature);
+            }
+            featureSource.CommitTransaction();
+        }
+
+        public virtual void ImportData(FeatureSource featureSourceForRead, FeatureSource featureSourceForSave)
+        {
+            bool readCompleted = false;
+            featureSourceForRead.Open();
+            featureSourceForSave.Open();
+#if DEBUG
+            long featureCount = featureSourceForRead.GetCount();
+#endif
+            Collection<Feature> features = featureSourceForRead.GetAllFeatures(ReturningColumnsType.AllColumns);
+            Collection<Collection<Feature>> featureGroups = GroupFeatures(features);
+            var writeTasks = (from items in featureGroups
+                              select Task.Factory.StartNew(() => WriteFeaturesIntoQueue(items, featureSourceForRead))).ToArray();
+
+
+            var readTask = Task.Factory.StartNew(() =>
+            {
+                while (!readCompleted || queue.Count > 0)
+                {
+                    while (queue.Count > 0)
+                    {
+                        Collection<Feature> lineFeatures = queue.Dequeue();
+                        SaveFeatures(lineFeatures, featureSourceForSave);
+                    }
+                }
+            });
+
+            Task.WaitAll(writeTasks);
+            readCompleted = true;
+            Task.WaitAny(readTask);
+            #region Old version
+            //foreach (Feature feature in features)
+            //{
+            //    Collection<LineShape> processingLineShapes = GeometryHelper.GetLineShapes(feature);
+            //    // Get the lineshape of the processing feature.
+            //    foreach (LineShape processingLineShape in processingLineShapes)
+            //    {
+            //        // Define a variable to save the points where the adjacent lines intersect with current processing line.
+            //        Collection<PointShape> crossingPoints = new Collection<PointShape>();
+
+            //        // Get all the lines in current processing shape bounds.
+            //        Collection<Feature> adjacentFeatures = featureSourceForRead.GetFeaturesInsideBoundingBox(processingLineShape.GetBoundingBox(), ReturningColumnsType.NoColumns);
+
+            //        // Loop and see if the queried shape is intersected with processing shape.
+            //        foreach (Feature adjacentFeature in adjacentFeatures)
+            //        {
+            //            LineBaseShape adjacentLineShape = adjacentFeature.GetShape() as LineBaseShape;
+            //            MultipointShape tempCrossingPoints = processingLineShape.GetCrossing(adjacentLineShape);
+
+            //            // The queried shape is intersected with processing shape.
+            //            foreach (PointShape point in tempCrossingPoints.Points)
+            //            {
+            //                bool hasAdded = false;
+            //                foreach (var item in crossingPoints)
+            //                {
+            //                    if (point.X == item.X && point.Y == item.Y)
+            //                    {
+            //                        hasAdded = true;
+            //                        break;
+            //                    }
+            //                }
+            //                if (!hasAdded)
+            //                {
+            //                    crossingPoints.Add(point);
+            //                }
+            //            }
+            //        }
+
+            //        // Order the crossing points following the sequence of line vertex.
+            //        Collection<FlagedVertex> vertecesOfNewLine = GeometryHelper.AddCrossingPointToLine(processingLineShape, crossingPoints);
+
+            //        // Split current processing lineshape into segments.
+            //        featureSourceForSave.BeginTransaction();
+            //        Collection<Vertex> verteces = new Collection<Vertex>();
+            //        foreach (var vertex in vertecesOfNewLine)
+            //        {
+            //            verteces.Add(vertex.Vertex);
+            //            if (vertex.Flag)
+            //            {
+            //                if (verteces.Count >= 2)
+            //                {
+            //                    LineShape segment = new LineShape(verteces);
+            //                    featureSourceForSave.AddFeature(new Feature(segment, feature.ColumnValues));
+
+            //                    verteces.RemoveAt(0);
+            //                }
+            //            }
+            //        }
+            //        featureSourceForSave.CommitTransaction();
+            //    }
+
+            //#if DEBUG
+            //Console.WriteLine(string.Format("Done {0} in {1}", feature.Id, featureCount));
+            //#endif
+            //}
+
+            #endregion
             featureSourceForRead.Close();
             featureSourceForSave.Close();
         }
