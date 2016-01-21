@@ -9,7 +9,7 @@ namespace RouteAlgorithm
     {
         public int Compare(ActiveNode n1, ActiveNode n2)
         {
-            double dist = n1.dist - n2.dist;
+            double dist = (n1.dist+n1.heuristic) - (n2.dist+n2.heuristic);
             if (dist < 0)
             {
                 return -1;

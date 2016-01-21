@@ -10,6 +10,7 @@ namespace RouteAlgorithm
         private RoadNetwork graph;
         private Dictionary<string, double> visitedNodeMarks;
         private List<ActiveNode> activeNodes;
+        private Dictionary<string,double> heuristics;
         private Dictionary<string,string> parents;
 
         public DijkstraAlgorithm() { }
@@ -43,6 +44,18 @@ namespace RouteAlgorithm
             }
         }
 
+        public Dictionary<string, double> Heuristics
+        {
+            get
+            {
+                if (heuristics == null)
+                {
+                    heuristics = new Dictionary<string, double>();
+                }
+                return heuristics;
+            }
+        }
+
         public Dictionary<string, string> Parents
         {
             get
@@ -55,6 +68,8 @@ namespace RouteAlgorithm
             }
         }
 
+       
+
         public double GetShortPath(string startNodeId, string targetNodeId)
         {
             visitedNodeMarks = new Dictionary<string, double>();
@@ -65,7 +80,16 @@ namespace RouteAlgorithm
             ActiveNode startNode;
             ActiveNode activeNode;
             ActiveNode currentNode;
-            startNode = new ActiveNode(startNodeId,0,"-1");
+
+            if (heuristics == null)
+            {
+                startNode = new ActiveNode(startNodeId, 0, 0, "-1");
+            }
+            else
+            {
+                startNode = new ActiveNode(startNodeId,0,heuristics[startNodeId],"-1");
+            }
+            
             activeNodes = new List<ActiveNode>();
             parents = new Dictionary<string, string>();
             activeNodes.Add(startNode);
@@ -73,7 +97,12 @@ namespace RouteAlgorithm
             
             while (activeNodes.Count() != 0)
             {
+                Console.WriteLine("++++++++++++++");
                 activeNodes.Sort(new ActiveNodeCompare());
+                for (int i = 0; i < activeNodes.Count(); i++)
+                {
+                    Console.WriteLine("pai xu hou :"+activeNodes[i].id);
+                }
                 currentNode = activeNodes[0];
                 activeNodes.RemoveAt(0);
                 if (isvisited(currentNode.id))
@@ -100,7 +129,15 @@ namespace RouteAlgorithm
                     if (!isvisited(arc.TailNode.Id))
                     { 
                         distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
-                        activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode,currentNode.id);
+                        if (heuristics == null)
+                        {
+                            activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode,0, currentNode.id);
+                        }
+                        else
+                        {
+                            activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode,heuristics[currentNode.id], currentNode.id);
+                        }
+                        
                         activeNodes.Add(activeNode);
                     }
                 }
@@ -115,6 +152,22 @@ namespace RouteAlgorithm
                 return true;
             }
             return false;
+        }
+
+        public Dictionary<string,double> ComputeStraihtHeuristic(string targetNodeId)
+        {
+            heuristics = new Dictionary<string, double>();
+            double distance;
+            int maxSpeed = 110;
+            double costTime;
+            Node targetNode = graph.MapNodes[targetNodeId];
+            for (int i=0;i<graph.Nodes.Count();i++)
+            {
+                distance = graph.ComputeDistance(graph.Nodes[i], targetNode);
+                costTime = distance / maxSpeed;
+                heuristics.Add(graph.Nodes[i].Id,costTime);
+            }
+            return heuristics;
         }
 
         public void ShortPathToString(string startNodeId,string targetNodeId)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace RouteAlgorithm
@@ -73,6 +74,14 @@ namespace RouteAlgorithm
                 }
                 return mapNodes;
             }
+        }
+
+        public double ComputeDistance(Node n1, Node n2)
+        { 
+            double midLat = n1.coordinate.Latitude - n2.coordinate.Longitude;
+            double midLng = n1.coordinate.Longitude - n2.coordinate.Longitude;
+            double dist = Math.Sqrt(Math.Pow(midLat,2)+Math.Pow(midLng,2));
+            return dist;
         }
     }
 }

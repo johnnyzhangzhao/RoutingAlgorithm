@@ -6,7 +6,7 @@ namespace RouteAlgorithm
     public class Node
     {
         private string id;
-        private Coordinate coordinate;      
+        public Coordinate coordinate;      
         private Dictionary<string, string> tags;
         private Collection<Arc> incomingArcs;
         private Collection<Arc> outgoingArcs;
