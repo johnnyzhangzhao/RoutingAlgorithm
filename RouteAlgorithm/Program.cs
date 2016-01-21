@@ -45,19 +45,17 @@ namespace RouteAlgorithm
             rn.Nodes.Add(n4);
             rn.Nodes.Add(n5);
             rn.Nodes.Add(n6);
-            rn.MapNodes.Add("1", n1);
-            rn.MapNodes.Add("2", n2);
             rn.Arcs.Add(arc12);
             rn.Arcs.Add(arc13);
             rn.Arcs.Add(arc16);
             rn.AdjacentArcs.Add(n1.Id, rn.Arcs);
 
-            
+
             Collection<Arc> aa = new Collection<Arc>();
             aa.Add(arc21);
             aa.Add(arc23);
             aa.Add(arc24);
-            rn.AdjacentArcs.Add(n2.Id,aa);
+            rn.AdjacentArcs.Add(n2.Id, aa);
 
             Collection<Arc> bb = new Collection<Arc>();
             bb.Add(arc31);
@@ -83,11 +81,19 @@ namespace RouteAlgorithm
             ee.Add(arc54);
             rn.AdjacentArcs.Add(n5.Id, ee);
 
-            DijkstraAlgorithm dij = new DijkstraAlgorithm(rn );
+            rn.MapNodes.Add("1", n1);
+            rn.MapNodes.Add("2", n2);
+            rn.MapNodes.Add("3", n3);
+            rn.MapNodes.Add("4", n4);
+            rn.MapNodes.Add("5", n5);
+            rn.MapNodes.Add("6", n6);
+            DijkstraAlgorithm dij = new DijkstraAlgorithm(rn);
             double cost = dij.GetShortPath("1", "5");
-            dij.ShortPathToString();
-            Console.WriteLine("min cost:"+cost);
+            Console.WriteLine("cost is:" + cost);
+            dij.ShortPathToString("1", "5");
+
             Console.ReadLine();
+
         }
     }
 }

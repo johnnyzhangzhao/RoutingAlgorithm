@@ -9,7 +9,7 @@ namespace RouteAlgorithm
     {
         public int Compare(ActiveNode n1, ActiveNode n2)
         {
-            double dist = n1.Dist - n2.Dist;
+            double dist = n1.dist - n2.dist;
             if (dist < 0)
             {
                 return -1;

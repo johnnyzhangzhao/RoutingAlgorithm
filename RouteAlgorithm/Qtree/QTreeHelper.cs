@@ -56,7 +56,7 @@ namespace RouteAlgorithm
 
             string location = string.Empty;
 
-            if (shapeBoundingBox.IsWithin(extentBoundingBox))
+            if (IsWithin(shapeBoundingBox, extentBoundingBox))
             {
                 location += "0";
                 int currentlevel = 1;
@@ -68,25 +68,25 @@ namespace RouteAlgorithm
                     RectangleShape lowerLeft = GetLowerLeftQuater(extentBoundingBox);
                     RectangleShape lowerRight = GetLowerRightQuater(extentBoundingBox);
 
-                    if (shapeBoundingBox.IsWithin(upperLeft))
+                    if (IsWithin(shapeBoundingBox,upperLeft))
                     {
                         location += "1";
                         currentlevel++;
                         extentBoundingBox = upperLeft;
                     }
-                    else if (shapeBoundingBox.IsWithin(uppperRight))
+                    else if (IsWithin(shapeBoundingBox, uppperRight))
                     {
                         location += "2";
                         currentlevel++;
                         extentBoundingBox = uppperRight;
                     }
-                    else if (shapeBoundingBox.IsWithin(lowerLeft))
+                    else if (IsWithin(shapeBoundingBox, lowerLeft))
                     {
                         location += "3";
                         currentlevel++;
                         extentBoundingBox = lowerLeft;
                     }
-                    else if (shapeBoundingBox.IsWithin(lowerRight))
+                    else if (IsWithin(shapeBoundingBox, lowerRight))
                     {
                         location += "4";
                         currentlevel++;
@@ -101,6 +101,19 @@ namespace RouteAlgorithm
 
             return location;
 
+        }
+
+        private static bool IsWithin(RectangleShape rectangle1, RectangleShape rectangle2)
+        {
+            bool isWithin = false;
+
+            if(!(rectangle1.UpperRightPoint.X < rectangle2.UpperLeftPoint.X || rectangle1.UpperLeftPoint.X > rectangle2.UpperRightPoint.X
+                || rectangle1.UpperLeftPoint.Y < rectangle2.LowerLeftPoint.Y || rectangle1.LowerLeftPoint.Y > rectangle2.UpperLeftPoint.Y))
+            {
+                isWithin = true;
+            }
+
+            return isWithin;
         }
 
         public static int GetAppropriateLevel(RectangleShape extent, Feature feature)

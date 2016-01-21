@@ -2,34 +2,21 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace RouteAlgorithm
 {
     public class DijkstraAlgorithm
     {
         private RoadNetwork graph;
-        private Node startNode;
-        private Node targetNode;
         private Dictionary<string, double> visitedNodeMarks;
         private List<ActiveNode> activeNodes;
-        private Dictionary<string,double> disToNode;
+        private Dictionary<string,string> parents;
 
         public DijkstraAlgorithm() { }
 
         public DijkstraAlgorithm(RoadNetwork graph)
         {
             this.graph = graph;
-        }
-
-        public Node StartNode
-        {
-            set { startNode = value; }
-        }
-
-        public Node TargetNode
-        {
-            set { targetNode = value; }
         }
 
         public Dictionary<string, double> VisitedNodeMarks
@@ -56,21 +43,20 @@ namespace RouteAlgorithm
             }
         }
 
-        public Dictionary<string, double> DisToNode
+        public Dictionary<string, string> Parents
         {
             get
             {
-                if (disToNode == null)
+                if (parents == null)
                 {
-                    disToNode = new Dictionary<string, double>();
+                    parents = new Dictionary<string, string>();
                 }
-                return disToNode;
+                return parents;
             }
         }
 
         public double GetShortPath(string startNodeId, string targetNodeId)
         {
-            Dictionary<Node, double> distance = new Dictionary<Node, double>();
             visitedNodeMarks = new Dictionary<string, double>();
             double shortestPathCost = 0;
             Collection<Arc> nodeAdjacentArc;
@@ -79,31 +65,27 @@ namespace RouteAlgorithm
             ActiveNode startNode;
             ActiveNode activeNode;
             ActiveNode currentNode;
-            startNode = new ActiveNode(startNodeId,0);
+            startNode = new ActiveNode(startNodeId,0,"-1");
             activeNodes = new List<ActiveNode>();
-            disToNode = new Dictionary<string, double>();
+            parents = new Dictionary<string, string>();
             activeNodes.Add(startNode);
-            disToNode.Add(startNode.id,0);
             
             
             while (activeNodes.Count() != 0)
             {
                 activeNodes.Sort(new ActiveNodeCompare());
                 currentNode = activeNodes[0];
-                if (!disToNode.ContainsKey(currentNode.id))
-                {
-                    disToNode.Add(currentNode.id, currentNode.Dist);
-                }
                 activeNodes.RemoveAt(0);
                 if (isvisited(currentNode.id))
                 {
                     continue;
                 }
-                visitedNodeMarks.Add(currentNode.id, currentNode.Dist);
+                visitedNodeMarks.Add(currentNode.id, currentNode.dist);
+                parents.Add(currentNode.id, currentNode.parent);
                 numSettledNodes++;
                 if (currentNode.id == targetNodeId)
                 {
-                    shortestPathCost = currentNode.Dist;
+                    shortestPathCost = currentNode.dist;
                     break;
                 }
                 if (numSettledNodes > graph.Nodes.Count())
@@ -112,25 +94,14 @@ namespace RouteAlgorithm
                     break;
                 }
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
-                
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
-                    
-                    Arc arc;
-                    arc = nodeAdjacentArc[i];
+                    Arc arc = nodeAdjacentArc[i];
                     if (!isvisited(arc.TailNode.Id))
                     { 
-                        
-                        distToAdjNode = currentNode.Dist + nodeAdjacentArc[i].Cost;
-                        activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode);
-                        for (int j = 0; j < activeNodes.Count(); j++)
-                        {
-                            if (activeNode.id == activeNodes[j].id && activeNode.Dist > activeNodes[j].Dist)
-                            {
-                                DisToNode.Remove(currentNode.id);
-                            }
-                        }
-                        activeNodes.Add(activeNode);  
+                        distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
+                        activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode,currentNode.id);
+                        activeNodes.Add(activeNode);
                     }
                 }
             }
@@ -146,12 +117,21 @@ namespace RouteAlgorithm
             return false;
         }
 
-        public void ShortPathToString()
+        public void ShortPathToString(string startNodeId,string targetNodeId)
         {
-            foreach (string t in disToNode.Keys)
+            string path = "";
+            Node currentNode = new Node ();
+            string currentNodeId = "";
+            currentNode = graph.MapNodes[targetNodeId];
+            currentNodeId = targetNodeId;
+            path = path + currentNode.Id + "->";          
+            while (currentNodeId != startNodeId)
             {
-                Console.WriteLine("short path is:" + t + "," + disToNode[t]);
+                currentNodeId = parents[currentNodeId];
+                currentNode = graph.MapNodes[currentNodeId];
+                path = currentNode.Id + "->" + path ;
             }
+            Console.WriteLine("short path is:"+path);
         }
 
 
