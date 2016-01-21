@@ -86,17 +86,8 @@ namespace RouteAlgorithm
             
             while (activeNodes.Count() != 0)
             {
-                Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                 activeNodes.Sort(new ActiveNodeCompare());
-
-                for (int i = 0; i < activeNodes.Count(); i++)
-                {
-                    Console.WriteLine("pai xu hou"+activeNodes[i].id+","+activeNodes[i].dist + "," + activeNodes[i].parent);
-                }
-
                 currentNode = activeNodes[0];
-                Console.WriteLine("***currentnode is"+currentNode.id+"***");
-
                 activeNodes.RemoveAt(0);
                 if (isvisited(currentNode.id))
                 {
@@ -104,10 +95,6 @@ namespace RouteAlgorithm
                 }
                 visitedNodeMarks.Add(currentNode.id, currentNode.dist);
                 parents.Add(currentNode.id, currentNode.parent);
-                //if (!parents.ContainsKey(currentNode.id))
-                //{
-                //    parents.Add(currentNode.id, currentNode.parent);
-                //}
                 numSettledNodes++;
                 if (currentNode.id == targetNodeId)
                 {
@@ -120,33 +107,15 @@ namespace RouteAlgorithm
                     break;
                 }
                 nodeAdjacentArc = this.graph.AdjacentArcs[currentNode.id];
-                //Console.WriteLine("nodeAdjacentArc.Count is " + nodeAdjacentArc.Count());
-                
                 for (int i = 0; i < nodeAdjacentArc.Count(); i++)
                 {
-                    
                     Arc arc;
                     arc = nodeAdjacentArc[i];
-                    //Console.WriteLine("arc's node is"+arc.HeadNode.Id+","+arc.TailNode.Id);
                     if (!isvisited(arc.TailNode.Id))
                     { 
-                        
                         distToAdjNode = currentNode.dist + nodeAdjacentArc[i].Cost;
                         activeNode = new ActiveNode(arc.TailNode.Id, distToAdjNode,currentNode.id);
-                        
-
-                        Console.WriteLine("activenode is "+activeNode.id);
                         activeNodes.Add(activeNode);
-                    }
-                }
-                for (int j = 0; j < activeNodes.Count(); j++)
-                {
-                    for (int i = activeNodes.Count() - 1; i > j; i--)
-                    {
-                        if (activeNodes[i].id == activeNodes[j].id && activeNodes[i].dist < activeNodes[j].dist)
-                        {
-                            activeNodes.RemoveAt(j);
-                        }
                     }
                 }
             }
@@ -173,11 +142,10 @@ namespace RouteAlgorithm
             while (currentNodeId != startNodeId)
             {
                 currentNodeId = parents[currentNodeId];
-                Console.WriteLine("^^^" + currentNodeId);
                 currentNode = graph.MapNodes[currentNodeId];
                 path = currentNode.Id + "->" + path ;
             }
-            Console.WriteLine(path);
+            Console.WriteLine("short path is:"+path);
         }
 
 

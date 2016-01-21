@@ -88,9 +88,9 @@ namespace RouteAlgorithm
             rn.MapNodes.Add("5", n5);
             rn.MapNodes.Add("6", n6);
             DijkstraAlgorithm dij = new DijkstraAlgorithm(rn);
-            double cost = dij.GetShortPath("1", "4");
+            double cost = dij.GetShortPath("1", "5");
             Console.WriteLine("cost is:" + cost);
-            dij.ShortPathToString("1", "4");
+            dij.ShortPathToString("1", "5");
 
             Console.ReadLine();
 
