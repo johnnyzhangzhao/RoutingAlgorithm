@@ -10,7 +10,7 @@ namespace RouteAlgorithm
     internal class QTreeSpatialIndex : SpatialIndex
     {
         private static readonly object sync = new object();
-        private Dictionary<string, QuadTreeNode> qtree;
+        private Dictionary<ulong, QuadTreeNode> qtree;
         private RectangleShape maxExtent;
         private int maxLevel;
 
@@ -20,7 +20,7 @@ namespace RouteAlgorithm
 
         public QTreeSpatialIndex(RectangleShape maxExtent)
         {
-            this.qtree = new Dictionary<string, QuadTreeNode>();
+            this.qtree = new Dictionary<ulong, QuadTreeNode>();
             this.maxExtent = maxExtent;
             this.maxLevel = 0;
         }
@@ -40,8 +40,8 @@ namespace RouteAlgorithm
         protected override void AddCore(Feature feature)
         {
             int level = QTreeHelper.GetAppropriateLevel(maxExtent, feature.GetBoundingBox());
-            string location = QTreeHelper.GetLocation(maxExtent, feature.GetShape(), level);
-            if (!string.IsNullOrEmpty(location))
+            ulong location = QTreeHelper.GetLocation(maxExtent, feature.GetShape(), level);
+            if (location != 0)
             {
                 QuadCell cell = QTreeHelper.GetCellByLocation(maxExtent, location);
                 lock (sync)
@@ -80,8 +80,8 @@ namespace RouteAlgorithm
         protected override void DeleteCore(Feature feature)
         {
             int level = QTreeHelper.GetAppropriateLevel(maxExtent, feature.GetBoundingBox());
-            string location = QTreeHelper.GetLocation(maxExtent, feature.GetShape(), level);
-            if (!string.IsNullOrEmpty(location) && qtree.ContainsKey(location))
+            ulong location = QTreeHelper.GetLocation(maxExtent, feature.GetShape(), level);
+            if (location == 0 && qtree.ContainsKey(location))
             {
                 qtree.Remove(location);
             }
@@ -97,14 +97,13 @@ namespace RouteAlgorithm
 
             Collection<QuadTreeNode> result = new Collection<QuadTreeNode>();
 
-            string queriedBboxLocation = QTreeHelper.GetLocation(maxExtent, boundingBox, level);
+            ulong queriedBboxLocation = QTreeHelper.GetLocation(maxExtent, boundingBox, level);
             lock (sync)
             {
-                foreach (string key in qtree.Keys)
+                foreach (ulong key in qtree.Keys)
                 {
                     //QuadCell cell = QTreeHelper.GetCellByLocation(maxExtent, key);
-
-                    if (key.StartsWith(queriedBboxLocation) && boundingBox.Intersects(QTreeHelper.GetCellByLocation(maxExtent, key).BoundingBox))
+                    if (QTreeHelper.HasPart(queriedBboxLocation, key) && boundingBox.Intersects(QTreeHelper.GetCellByLocation(maxExtent, key).BoundingBox))
                     {
                         result.Add(qtree[key]);
                     }
@@ -112,14 +111,14 @@ namespace RouteAlgorithm
             }
 
             return result;
-        } 
+        }
 
-        private Collection<string> GetPossibleNodes(string location)
+        private Collection<ulong> GetPossibleNodes(ulong location)
         {
-            Collection<string> possibleNodes = new Collection<string>();
-            foreach (string key in qtree.Keys)
+            Collection<ulong> possibleNodes = new Collection<ulong>();
+            foreach (ulong key in qtree.Keys)
             {
-                if (key.StartsWith(location))
+                if (QTreeHelper.HasPart(location,key))
                 {
                     possibleNodes.Add(key);
                 }

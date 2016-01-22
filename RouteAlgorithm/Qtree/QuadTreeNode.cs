@@ -9,7 +9,7 @@ namespace RouteAlgorithm
     internal class QuadTreeNode
     {
         [Obfuscation(Exclude = true)]
-        private string location;
+        private ulong location;
         [Obfuscation(Exclude = true)]
         private RectangleShape boundingBox;
         [Obfuscation(Exclude = true)]
@@ -18,15 +18,15 @@ namespace RouteAlgorithm
         private Collection<QuadCell> children;
 
         public QuadTreeNode()
-            : this(string.Empty, new RectangleShape(), string.Empty)
+            : this(0, new RectangleShape(), string.Empty)
         { }
 
         public QuadTreeNode(string location, RectangleShape boundingBox)
-            : this(string.Empty, new RectangleShape(), string.Empty)
+            : this(0, new RectangleShape(), string.Empty)
         {
         }
 
-        public QuadTreeNode(string location, RectangleShape boundingBox, string id)
+        public QuadTreeNode(ulong location, RectangleShape boundingBox, string id)
         {
             this.location = location;
             this.boundingBox = boundingBox;
@@ -34,7 +34,7 @@ namespace RouteAlgorithm
             this.children = new Collection<QuadCell>();
         }
 
-        public string Location
+        public ulong Location
         {
             get { return location; }
             set { location = value; }

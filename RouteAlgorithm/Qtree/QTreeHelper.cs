@@ -9,32 +9,25 @@ namespace RouteAlgorithm
     [Serializable]
     internal static class QTreeHelper
     {
-        public static QuadCell GetCellByLocation(RectangleShape extent, string location)
+        public static QuadCell GetCellByLocation(RectangleShape extent, ulong location)
         {
             RectangleShape boundingBox = SquaredExtent(extent);
-            for (int i = 0; i < location.Length; i++)
+
+            while (location > 0)
             {
-                switch (location[i].ToString())
+                int currentLocation = GetCurrentLocation(ref location);
+                switch (currentLocation)
                 {
-                    case "0":
-                        if (i != 0)
-                        {
-                            throw new Exception("parameter is invalid.");
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    case "1":
+                    case 1:
                         boundingBox = GetUpperLeftQuater(boundingBox);
                         break;
-                    case "2":
+                    case 2:
                         boundingBox = GetUpperRightQuater(boundingBox);
                         break;
-                    case "3":
+                    case 3:
                         boundingBox = GetLowerLeftQuater(boundingBox);
                         break;
-                    case "4":
+                    case 4:
                         boundingBox = GetLowerRightQuater(boundingBox);
                         break;
                     default:
@@ -44,21 +37,66 @@ namespace RouteAlgorithm
             return new QuadCell(location, boundingBox);
         }
 
-        public static string GetLocation(RectangleShape extent, Feature feature, int level)
+        private static ulong Reverse(ulong location)
+        {
+            ulong temporary, result = 0, i = 0;
+            while (i++ < 64)
+            {
+                temporary = location & 1;
+                result <<= 1;
+                result = result | temporary;
+                location >>= 1;
+            }
+            return result;
+        }
+
+        private static int GetCurrentLocation(ref ulong location)
+        {
+            int count = 0;
+            ulong temporary = 0;
+            while (temporary < 1)
+            {
+                temporary = location;
+                temporary >>= 1;
+                temporary <<= 1;
+                temporary = temporary ^ location;
+                count++;
+                location >>= 1;
+            }
+
+            return count;
+        }
+
+        public static ulong GetLocation(RectangleShape extent, Feature feature, int level)
         {
             return GetLocation(extent, feature.GetShape(), level);
         }
 
-        public static string GetLocation(RectangleShape extent, BaseShape shape, int level)
+        public static bool HasPart(ulong part, ulong whole)
+        {
+            bool isPart = false;
+            while(whole > 0)
+            {
+                whole >>= 1;
+                if (part == whole)
+                {
+                    isPart = true;
+                    break;
+                }
+            }
+
+            return isPart;
+        }
+
+        public static ulong GetLocation(RectangleShape extent, BaseShape shape, int level)
         {
             RectangleShape extentBoundingBox = SquaredExtent(extent);
             RectangleShape shapeBoundingBox = shape.GetBoundingBox();
 
-            string location = string.Empty;
+            ulong location = 1;
 
-            if (IsWithin(shapeBoundingBox, extentBoundingBox))
+            if (shapeBoundingBox.IsWithin(extentBoundingBox))
             {
-                location += "0";
                 int currentlevel = 1;
 
                 while (currentlevel < level)
@@ -68,27 +106,27 @@ namespace RouteAlgorithm
                     RectangleShape lowerLeft = GetLowerLeftQuater(extentBoundingBox);
                     RectangleShape lowerRight = GetLowerRightQuater(extentBoundingBox);
 
-                    if (IsWithin(shapeBoundingBox,upperLeft))
+                    if (shapeBoundingBox.IsWithin(upperLeft))
                     {
-                        location += "1";
+                        location = (location << 1) | 1;
                         currentlevel++;
                         extentBoundingBox = upperLeft;
                     }
-                    else if (IsWithin(shapeBoundingBox, uppperRight))
+                    else if (shapeBoundingBox.IsWithin(uppperRight))
                     {
-                        location += "2";
+                        location = (location << 2) | 1;
                         currentlevel++;
                         extentBoundingBox = uppperRight;
                     }
-                    else if (IsWithin(shapeBoundingBox, lowerLeft))
+                    else if (shapeBoundingBox.IsWithin(lowerLeft))
                     {
-                        location += "3";
+                        location = (location << 3) | 1;
                         currentlevel++;
                         extentBoundingBox = lowerLeft;
                     }
-                    else if (IsWithin(shapeBoundingBox, lowerRight))
+                    else if (shapeBoundingBox.IsWithin(lowerRight))
                     {
-                        location += "4";
+                        location = (location << 4) | 1;
                         currentlevel++;
                         extentBoundingBox = lowerRight;
                     }
@@ -103,18 +141,59 @@ namespace RouteAlgorithm
 
         }
 
-        private static bool IsWithin(RectangleShape rectangle1, RectangleShape rectangle2)
-        {
-            bool isWithin = false;
+        //public static string GetLocation(RectangleShape extent, BaseShape shape, int level)
+        //{
+        //    RectangleShape extentBoundingBox = SquaredExtent(extent);
+        //    RectangleShape shapeBoundingBox = shape.GetBoundingBox();
 
-            if(!(rectangle1.UpperRightPoint.X < rectangle2.UpperLeftPoint.X || rectangle1.UpperLeftPoint.X > rectangle2.UpperRightPoint.X
-                || rectangle1.UpperLeftPoint.Y < rectangle2.LowerLeftPoint.Y || rectangle1.LowerLeftPoint.Y > rectangle2.UpperLeftPoint.Y))
-            {
-                isWithin = true;
-            }
+        //    string location = string.Empty;
 
-            return isWithin;
-        }
+        //    if (shapeBoundingBox.IsWithin(extentBoundingBox))
+        //    {
+        //        location += "0";
+        //        int currentlevel = 1;
+
+        //        while (currentlevel < level)
+        //        {
+        //            RectangleShape upperLeft = GetUpperLeftQuater(extentBoundingBox);
+        //            RectangleShape uppperRight = GetUpperRightQuater(extentBoundingBox);
+        //            RectangleShape lowerLeft = GetLowerLeftQuater(extentBoundingBox);
+        //            RectangleShape lowerRight = GetLowerRightQuater(extentBoundingBox);
+
+        //            if (shapeBoundingBox.IsWithin(upperLeft))
+        //            {
+        //                location += "1";
+        //                currentlevel++;
+        //                extentBoundingBox = upperLeft;
+        //            }
+        //            else if (shapeBoundingBox.IsWithin(uppperRight))
+        //            {
+        //                location += "2";
+        //                currentlevel++;
+        //                extentBoundingBox = uppperRight;
+        //            }
+        //            else if (shapeBoundingBox.IsWithin(lowerLeft))
+        //            {
+        //                location += "3";
+        //                currentlevel++;
+        //                extentBoundingBox = lowerLeft;
+        //            }
+        //            else if (shapeBoundingBox.IsWithin(lowerRight))
+        //            {
+        //                location += "4";
+        //                currentlevel++;
+        //                extentBoundingBox = lowerRight;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
+
+        //    return location;
+
+        //}
 
         public static int GetAppropriateLevel(RectangleShape extent, Feature feature)
         {
@@ -177,46 +256,53 @@ namespace RouteAlgorithm
 
             if (shapeBoundingBox.Intersects(extentBoundingBox))
             {
-                string location = GetLocation(extentBoundingBox, shape, int.MaxValue);
+                ulong location = GetLocation(extentBoundingBox, shape, int.MaxValue);
+                ulong reversedResult = Reverse(location);
+                ulong temporaryValue = reversedResult;
+                temporaryValue >>= 1;
 
-                if (startLevel <= location.Length)
+                int locationLength = GetLevelsCount(temporaryValue);
+                if (startLevel <= locationLength)
                 {
-                    for (int x = startLevel; x <= endLevel; x++)
+                    int index = startLevel;
+                    while (index <= endLevel)
                     {
-                        if (x <= location.Length)
+                        ulong temporaryLocation = temporaryValue;
+                        if (index <= locationLength)
                         {
-                            if (location.Length > 1)
+                            MovePositionByIndex(ref temporaryLocation, index);
+                            if (locationLength > 1)
                             {
-                                result.Add(GetCellByLocation(extentBoundingBox, "0" + location.Substring(1, x - 1)));
+                                result.Add(GetCellByLocation(extentBoundingBox, temporaryLocation));
                             }
                             else
                             {
-                                result.Add(GetCellByLocation(extentBoundingBox, "0"));
+                                result.Add(GetCellByLocation(extentBoundingBox, 0));
                             }
                         }
+                        index++;
                     }
                 }
-                if (endLevel > location.Length)
+                if (endLevel > locationLength)
                 {
-                    Queue<string> locationsToProcess = new Queue<string>();
+                    Queue<ulong> locationsToProcess = new Queue<ulong>();
                     locationsToProcess.Enqueue(location);
 
                     while (locationsToProcess.Count > 0)
                     {
-                        string currentLocation = locationsToProcess.Dequeue();
+                        ulong currentLocation = locationsToProcess.Dequeue();
 
                         for (int k = 1; k <= 4; k++)
                         {
-                            string newLocation = currentLocation + k;
+                            ulong newLocation = (currentLocation << k) | 1;
                             result.Add(GetCellByLocation(extentBoundingBox, newLocation));
-                            if (newLocation.Length < endLevel)
+                            int newLocationsCount = GetLevelsCount(newLocation);
+                            if (newLocationsCount < endLevel)
                             {
                                 locationsToProcess.Enqueue(newLocation);
                             }
                         }
                     }
-
-
                 }
             }
             //if (result.Count == 0)
@@ -227,6 +313,32 @@ namespace RouteAlgorithm
             //    result.Add(GetCellByLocation(extentBoundingBox, "04"));
             //}
             return result;
+        }
+
+        private static void MovePositionByIndex(ref ulong location, int index)
+        {
+            int count = 0;
+
+            while (location > 0)
+            {
+                int level = GetCurrentLocation(ref location);
+                if (index == count)
+                    break;
+                count++;
+            }
+        }
+
+        private static int GetLevelsCount(ulong location)
+        {
+            int count = 0;
+
+            while (location > 0)
+            {
+                int level = GetCurrentLocation(ref location);
+                count++;
+            }
+
+            return count;
         }
 
         public static int GetLevelByCellWidth(RectangleShape extent, double cellWidth)
@@ -290,7 +402,7 @@ namespace RouteAlgorithm
             return new RectangleShape(upperLeft, lowerRight);
         }
 
-        private static Dictionary<int, Collection<QuadCell>> GetCells(string location, RectangleShape boudingBox, Dictionary<int, Collection<QuadCell>> currentLevelCellsSet, int currentLevel, int endLevel)
+        private static Dictionary<int, Collection<QuadCell>> GetCells(ulong location, RectangleShape boudingBox, Dictionary<int, Collection<QuadCell>> currentLevelCellsSet, int currentLevel, int endLevel)
         {
             QuadCell newQTreeCell = new QuadCell(location, boudingBox);
             if (!currentLevelCellsSet.Keys.Contains(currentLevel))
@@ -305,10 +417,10 @@ namespace RouteAlgorithm
             if (currentLevel < endLevel)
             {
                 currentLevel++;
-                GetCells(location + "1", GetUpperLeftQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
-                GetCells(location + "2", GetUpperRightQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
-                GetCells(location + "3", GetLowerLeftQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
-                GetCells(location + "4", GetLowerRightQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
+                GetCells((location << 1) | 1, GetUpperLeftQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
+                GetCells((location << 2) | 1, GetUpperRightQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
+                GetCells((location << 3) | 1, GetLowerLeftQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
+                GetCells((location << 4) | 1, GetLowerRightQuater(boudingBox), currentLevelCellsSet, currentLevel, endLevel);
             }
 
             return currentLevelCellsSet;

@@ -9,21 +9,21 @@ namespace RouteAlgorithm
     internal class QuadCell
     {
         [Obfuscation(Exclude = true)]
-        private string location;
+        private ulong location;
         [Obfuscation(Exclude = true)]
         private RectangleShape boundingBox;
 
         public QuadCell()
-            : this(string.Empty, new RectangleShape())
+            : this(0, new RectangleShape())
         { }
 
-        public QuadCell(string location, RectangleShape boundingBox)
+        public QuadCell(ulong location, RectangleShape boundingBox)
         {
             this.location = location;
             this.boundingBox = boundingBox;
         }
 
-        public string Location
+        public ulong Location
         {
             get { return location; }
             set { location = value; }
